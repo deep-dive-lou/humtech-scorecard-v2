@@ -66,37 +66,37 @@ export default function AssessmentPage() {
   const progress = ((state.currentStep + 1) / totalSteps) * 100;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen py-8 px-4" style={{ backgroundColor: '#18304F' }}>
       <div className="max-w-2xl mx-auto">
         {/* Progress Bar */}
         <div className="mb-8">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
+          <div className="flex justify-between text-sm mb-2" style={{ color: '#DFE3E9' }}>
             <span>
               Step {state.currentStep + 1} of {totalSteps}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: '#19304F' }}>
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              className="h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%`, backgroundColor: '#E8C34C' }}
             />
           </div>
         </div>
 
         {/* Question, Pain Points, or Email Capture */}
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="rounded-lg shadow-md p-8" style={{ backgroundColor: '#FBFCFC' }}>
           {currentQuestion ? (
             <>
               <div className="mb-6">
-                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
+                <span className="inline-block px-3 py-1 text-sm font-medium rounded-full mb-4" style={{ backgroundColor: '#E8C34C', color: '#18304F' }}>
                   {
                     assessmentConfig.pillars.find(
                       (p) => p.id === currentQuestion.pillar
                     )?.name
                   }
                 </span>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold" style={{ color: '#18304F' }}>
                   {currentQuestion.text}
                 </h2>
               </div>
@@ -109,30 +109,27 @@ export default function AssessmentPage() {
                     <button
                       key={option.id}
                       onClick={() => handleAnswer(option.id)}
-                      className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                        isSelected
-                          ? "border-blue-600 bg-blue-50"
-                          : "border-gray-200 hover:border-gray-300 bg-white"
-                      }`}
+                      className="w-full text-left p-4 rounded-lg border-2 transition-all"
+                      style={{
+                        borderColor: isSelected ? '#E8C34C' : '#DFE3E9',
+                        backgroundColor: isSelected ? '#FEF9EC' : '#FBFCFC',
+                      }}
                     >
                       <div className="flex items-center">
                         <div
-                          className={`w-5 h-5 rounded-full border-2 mr-3 flex-shrink-0 flex items-center justify-center ${
-                            isSelected
-                              ? "border-blue-600 bg-blue-600"
-                              : "border-gray-300"
-                          }`}
+                          className="w-5 h-5 rounded-full border-2 mr-3 flex-shrink-0 flex items-center justify-center"
+                          style={{
+                            borderColor: isSelected ? '#E8C34C' : '#DFE3E9',
+                            backgroundColor: isSelected ? '#E8C34C' : 'transparent',
+                          }}
                         >
                           {isSelected && (
-                            <div className="w-2 h-2 bg-white rounded-full" />
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#18304F' }} />
                           )}
                         </div>
                         <span
-                          className={`${
-                            isSelected
-                              ? "text-gray-900 font-medium"
-                              : "text-gray-700"
-                          }`}
+                          className={isSelected ? 'font-medium' : ''}
+                          style={{ color: '#18304F' }}
                         >
                           {option.label}
                         </span>
@@ -145,13 +142,13 @@ export default function AssessmentPage() {
           ) : isPainPointsStep ? (
             <>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold mb-2" style={{ color: '#18304F' }}>
                   Tell Us About Your Challenges
                 </h2>
-                <p className="text-gray-600">
+                <p style={{ color: '#19304F' }}>
                   Please briefly bullet point your major inefficiency pain points or concerns (optional).
                 </p>
-                <p className="text-gray-500 text-sm mt-2">
+                <p className="text-sm mt-2" style={{ color: '#6B7280' }}>
                   e.g. "We're slow to engage new leads", "We're concerned that we're behind on AI adoption and our competitors will pull ahead"
                 </p>
               </div>
@@ -159,7 +156,8 @@ export default function AssessmentPage() {
               <div className="mb-6">
                 <label
                   htmlFor="painPoints"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: '#18304F' }}
                 >
                   Pain Points & Concerns
                 </label>
@@ -169,17 +167,23 @@ export default function AssessmentPage() {
                   onChange={(e) => handlePainPointsChange(e.target.value)}
                   placeholder="• We're slow to engage new leads&#10;• High manual workload on admin tasks&#10;• Concerned about competitors adopting AI faster"
                   rows={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+                  className="w-full px-4 py-3 rounded-lg outline-none resize-none border-2"
+                  style={{
+                    borderColor: '#DFE3E9',
+                    backgroundColor: '#FBFCFC',
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#E8C34C'}
+                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
                 />
               </div>
             </>
           ) : (
             <>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold mb-2" style={{ color: '#18304F' }}>
                   Get Your Results
                 </h2>
-                <p className="text-gray-600">
+                <p style={{ color: '#19304F' }}>
                   Enter your email to receive your personalized assessment
                   report.
                 </p>
@@ -188,7 +192,8 @@ export default function AssessmentPage() {
               <div className="mb-6">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: '#18304F' }}
                 >
                   Email Address
                 </label>
@@ -198,7 +203,13 @@ export default function AssessmentPage() {
                   value={state.email || ""}
                   onChange={(e) => handleEmailChange(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 rounded-lg outline-none border-2"
+                  style={{
+                    borderColor: '#DFE3E9',
+                    backgroundColor: '#FBFCFC',
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#E8C34C'}
+                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
                 />
               </div>
             </>
@@ -210,7 +221,12 @@ export default function AssessmentPage() {
           <button
             onClick={handleBack}
             disabled={state.currentStep === 0}
-            className="px-6 py-3 text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-3 font-medium rounded-lg border-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              color: state.currentStep === 0 ? '#DFE3E9' : '#FBFCFC',
+              borderColor: state.currentStep === 0 ? '#19304F' : '#DFE3E9',
+              backgroundColor: 'transparent',
+            }}
           >
             Back
           </button>
@@ -219,7 +235,11 @@ export default function AssessmentPage() {
             <button
               onClick={handleSubmit}
               disabled={!canProceed}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-3 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: canProceed ? '#E8C34C' : '#D7B745',
+                color: '#18304F',
+              }}
             >
               Submit Assessment
             </button>
@@ -227,7 +247,11 @@ export default function AssessmentPage() {
             <button
               onClick={handleNext}
               disabled={!canProceed}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-3 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: canProceed ? '#E8C34C' : '#D7B745',
+                color: '#18304F',
+              }}
             >
               Next
             </button>
