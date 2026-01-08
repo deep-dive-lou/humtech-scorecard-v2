@@ -12,6 +12,7 @@ export default function AssessmentPage() {
     answers: {},
     currentStep: 0,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isPainPointsStep = state.currentStep === totalQuestions;
   const isEmailStep = state.currentStep === totalQuestions + 1;
@@ -51,10 +52,44 @@ export default function AssessmentPage() {
     setState((prev) => ({ ...prev, painPoints }));
   };
 
-  const handleSubmit = () => {
-    console.log("Assessment submitted:", state);
-    // TODO: Submit to webhook
-    alert("Assessment submitted! (Check console for data)");
+  const handleSubmit = async () => {
+    // TODO: Replace with your n8n webhook URL
+    const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "";
+
+    if (!webhookUrl) {
+      console.error("N8N webhook URL not configured");
+      alert("Configuration error. Please contact support.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: state.email,
+          painPoints: state.painPoints,
+          answers: state.answers,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      console.log("Assessment submitted successfully:", state);
+      alert("Assessment submitted! Check your email for results.");
+    } catch (error) {
+      console.error("Error submitting assessment:", error);
+      alert("There was an error submitting your assessment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const canProceed = isEmailStep
@@ -234,14 +269,14 @@ export default function AssessmentPage() {
           {isEmailStep ? (
             <button
               onClick={handleSubmit}
-              disabled={!canProceed}
+              disabled={!canProceed || isSubmitting}
               className="px-6 py-3 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                backgroundColor: canProceed ? '#E8C34C' : '#D7B745',
+                backgroundColor: canProceed && !isSubmitting ? '#E8C34C' : '#D7B745',
                 color: '#18304F',
               }}
             >
-              Submit Assessment
+              {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
             </button>
           ) : (
             <button
