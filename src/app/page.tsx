@@ -136,16 +136,8 @@ export default function AssessmentPage() {
               <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#193050' }}>
                 Thank You!
               </h1>
-              <p className="text-lg mb-4" style={{ color: '#193050' }}>
+              <p className="text-lg" style={{ color: '#193050' }}>
                 Your assessment has been submitted successfully.
-              </p>
-              <p className="text-base" style={{ color: '#193050' }}>
-                We'll send your personalized report to <span className="font-semibold">{state.email}</span> shortly. Check your inbox for detailed insights and recommendations tailored to your business.
-              </p>
-            </div>
-            <div className="mt-8 pt-6" style={{ borderTop: '1px solid #193050' }}>
-              <p className="text-sm" style={{ color: '#193050' }}>
-                Have questions? Feel free to reach out to our team.
               </p>
             </div>
           </div>
