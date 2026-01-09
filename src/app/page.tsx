@@ -177,15 +177,15 @@ export default function AssessmentPage() {
         <div className="rounded-lg shadow-md p-5 sm:p-6" style={{ backgroundColor: '#FBFCFC' }}>
           {currentQuestion ? (
             <>
-              <div className="mb-5">
-                <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full mb-3" style={{ backgroundColor: '#D8B743', color: '#193050' }}>
+              <div className="mb-4">
+                <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full mb-2.5" style={{ backgroundColor: '#D8B743', color: '#193050' }}>
                   {
                     assessmentConfig.pillars.find(
                       (p) => p.id === currentQuestion.pillar
                     )?.name
                   }
                 </span>
-                <h2 className="text-lg sm:text-xl font-bold leading-snug" style={{ color: '#193050' }}>
+                <h2 className="text-base sm:text-lg font-bold leading-snug" style={{ color: '#193050' }}>
                   {currentQuestion.text}
                 </h2>
               </div>
@@ -243,13 +243,6 @@ export default function AssessmentPage() {
               </div>
 
               <div className="mb-5">
-                <label
-                  htmlFor="painPoints"
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: '#193050' }}
-                >
-                  Pain Points & Concerns
-                </label>
                 <textarea
                   id="painPoints"
                   value={state.painPoints || ""}
@@ -274,8 +267,7 @@ export default function AssessmentPage() {
                   Get Your Results
                 </h2>
                 <p className="text-sm" style={{ color: '#193050' }}>
-                  Enter your email to receive your personalized assessment
-                  report.
+                  Enter your email to receive your assessment report.
                 </p>
               </div>
 
