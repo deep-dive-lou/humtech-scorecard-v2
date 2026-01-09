@@ -3,6 +3,7 @@ export type Pillar = "operations" | "customer" | "revenue" | "data";
 export interface QuestionOption {
   id: string;
   label: string;
+  answerId: "A" | "B" | "C" | "D" | "E";
 }
 
 export interface Question {

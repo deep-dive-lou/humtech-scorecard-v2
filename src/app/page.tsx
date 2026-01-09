@@ -79,16 +79,28 @@ export default function AssessmentPage() {
         questionId: question.id,
         questionText: question.text,
         pillar: pillar?.name || question.pillar,
-        answerId: selectedOptionId,
+        answerId: selectedOption?.answerId || "",
         answerText: selectedOption?.label || "",
       };
+    });
+
+    // Create raw answers mapping with answerId (A, B, C, D, E)
+    const rawAnswersWithLetters: Record<string, string> = {};
+    assessmentConfig.questions.forEach((question) => {
+      const selectedOptionId = state.answers[question.id];
+      const selectedOption = question.options.find(
+        (opt) => opt.id === selectedOptionId
+      );
+      if (selectedOption) {
+        rawAnswersWithLetters[question.id] = selectedOption.answerId;
+      }
     });
 
     const payload = {
       email: state.email,
       painPoints: state.painPoints || "",
       answers: formattedAnswers,
-      rawAnswers: state.answers, // Keep raw data too for reference
+      rawAnswers: rawAnswersWithLetters, // questionId -> answerId (A, B, C, D, E)
       timestamp: new Date().toISOString(),
     };
 
