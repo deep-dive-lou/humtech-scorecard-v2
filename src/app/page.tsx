@@ -64,6 +64,25 @@ export default function AssessmentPage() {
 
     setIsSubmitting(true);
 
+    // Transform answers to include full question and answer text
+    const formattedAnswers = assessmentConfig.questions.map((question) => {
+      const selectedOptionId = state.answers[question.id];
+      const selectedOption = question.options.find(
+        (opt) => opt.id === selectedOptionId
+      );
+      const pillar = assessmentConfig.pillars.find(
+        (p) => p.id === question.pillar
+      );
+
+      return {
+        questionId: question.id,
+        questionText: question.text,
+        pillar: pillar?.name || question.pillar,
+        answerId: selectedOptionId,
+        answerText: selectedOption?.label || "",
+      };
+    });
+
     try {
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -72,8 +91,9 @@ export default function AssessmentPage() {
         },
         body: JSON.stringify({
           email: state.email,
-          painPoints: state.painPoints,
-          answers: state.answers,
+          painPoints: state.painPoints || "",
+          answers: formattedAnswers,
+          rawAnswers: state.answers, // Keep raw data too for reference
           timestamp: new Date().toISOString(),
         }),
       });
