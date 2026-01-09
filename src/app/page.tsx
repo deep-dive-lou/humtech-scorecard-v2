@@ -54,8 +54,8 @@ export default function AssessmentPage() {
   };
 
   const handleSubmit = async () => {
-    // TODO: Replace with your n8n webhook URL
     const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "";
+    const webhookTestUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_TEST_URL || "";
 
     if (!webhookUrl) {
       console.error("N8N webhook URL not configured");
@@ -84,23 +84,44 @@ export default function AssessmentPage() {
       };
     });
 
-    try {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: state.email,
-          painPoints: state.painPoints || "",
-          answers: formattedAnswers,
-          rawAnswers: state.answers, // Keep raw data too for reference
-          timestamp: new Date().toISOString(),
-        }),
-      });
+    const payload = {
+      email: state.email,
+      painPoints: state.painPoints || "",
+      answers: formattedAnswers,
+      rawAnswers: state.answers, // Keep raw data too for reference
+      timestamp: new Date().toISOString(),
+    };
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+      // Send to both webhooks in parallel
+      const webhookPromises = [
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+      ];
+
+      // Add test webhook if configured
+      if (webhookTestUrl) {
+        webhookPromises.push(
+          fetch(webhookTestUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          })
+        );
+      }
+
+      const responses = await Promise.all(webhookPromises);
+
+      // Check if main webhook succeeded
+      if (!responses[0].ok) {
+        throw new Error(`HTTP error! status: ${responses[0].status}`);
       }
 
       console.log("Assessment submitted successfully:", state);
