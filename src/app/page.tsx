@@ -13,6 +13,7 @@ export default function AssessmentPage() {
     currentStep: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const isPainPointsStep = state.currentStep === totalQuestions;
   const isEmailStep = state.currentStep === totalQuestions + 1;
@@ -103,7 +104,7 @@ export default function AssessmentPage() {
       }
 
       console.log("Assessment submitted successfully:", state);
-      alert("Assessment submitted! Check your email for results.");
+      setIsSubmitted(true);
     } catch (error) {
       console.error("Error submitting assessment:", error);
       alert("There was an error submitting your assessment. Please try again.");
@@ -120,38 +121,71 @@ export default function AssessmentPage() {
 
   const progress = ((state.currentStep + 1) / totalSteps) * 100;
 
+  // Show thank you page after submission
+  if (isSubmitted) {
+    return (
+      <main className="min-h-screen py-8 px-4 flex items-center justify-center" style={{ backgroundColor: '#193050' }}>
+        <div className="max-w-2xl w-full mx-auto">
+          <div className="rounded-lg shadow-md p-8 sm:p-12 text-center" style={{ backgroundColor: '#E1E4E9' }}>
+            <div className="mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#6BB790' }}>
+                <svg className="w-8 h-8" style={{ color: '#E1E4E9' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#193050' }}>
+                Thank You!
+              </h1>
+              <p className="text-lg mb-4" style={{ color: '#193050' }}>
+                Your assessment has been submitted successfully.
+              </p>
+              <p className="text-base" style={{ color: '#193050' }}>
+                We'll send your personalized report to <span className="font-semibold">{state.email}</span> shortly. Check your inbox for detailed insights and recommendations tailored to your business.
+              </p>
+            </div>
+            <div className="mt-8 pt-6" style={{ borderTop: '1px solid #193050' }}>
+              <p className="text-sm" style={{ color: '#193050' }}>
+                Have questions? Feel free to reach out to our team.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen py-8 px-4" style={{ backgroundColor: '#18304F' }}>
-      <div className="max-w-2xl mx-auto">
+    <main className="min-h-screen py-4 sm:py-8 px-4 flex items-center" style={{ backgroundColor: '#193050' }}>
+      <div className="max-w-lg sm:max-w-xl md:max-w-2xl w-full mx-auto">
         {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between text-sm mb-2" style={{ color: '#DFE3E9' }}>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex justify-between text-xs sm:text-sm mb-2" style={{ color: '#E1E4E9' }}>
             <span>
               Step {state.currentStep + 1} of {totalSteps}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full rounded-full h-2" style={{ backgroundColor: '#19304F' }}>
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: '#193050' }}>
             <div
               className="h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%`, backgroundColor: '#E8C34C' }}
+              style={{ width: `${progress}%`, backgroundColor: '#D8B743' }}
             />
           </div>
         </div>
 
         {/* Question, Pain Points, or Email Capture */}
-        <div className="rounded-lg shadow-md p-8" style={{ backgroundColor: '#FBFCFC' }}>
+        <div className="rounded-lg shadow-md p-6 sm:p-8" style={{ backgroundColor: '#E1E4E9' }}>
           {currentQuestion ? (
             <>
               <div className="mb-6">
-                <span className="inline-block px-3 py-1 text-sm font-medium rounded-full mb-4" style={{ backgroundColor: '#E8C34C', color: '#18304F' }}>
+                <span className="inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full mb-4" style={{ backgroundColor: '#D8B743', color: '#193050' }}>
                   {
                     assessmentConfig.pillars.find(
                       (p) => p.id === currentQuestion.pillar
                     )?.name
                   }
                 </span>
-                <h2 className="text-2xl font-bold" style={{ color: '#18304F' }}>
+                <h2 className="text-xl sm:text-2xl font-bold leading-tight" style={{ color: '#193050' }}>
                   {currentQuestion.text}
                 </h2>
               </div>
@@ -164,27 +198,27 @@ export default function AssessmentPage() {
                     <button
                       key={option.id}
                       onClick={() => handleAnswer(option.id)}
-                      className="w-full text-left p-4 rounded-lg border-2 transition-all"
+                      className="w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all text-sm sm:text-base"
                       style={{
-                        borderColor: isSelected ? '#E8C34C' : '#DFE3E9',
-                        backgroundColor: isSelected ? '#FEF9EC' : '#FBFCFC',
+                        borderColor: isSelected ? '#D8B743' : '#E1E4E9',
+                        backgroundColor: isSelected ? '#FEF9EC' : '#E1E4E9',
                       }}
                     >
                       <div className="flex items-center">
                         <div
                           className="w-5 h-5 rounded-full border-2 mr-3 flex-shrink-0 flex items-center justify-center"
                           style={{
-                            borderColor: isSelected ? '#E8C34C' : '#DFE3E9',
-                            backgroundColor: isSelected ? '#E8C34C' : 'transparent',
+                            borderColor: isSelected ? '#D8B743' : '#193050',
+                            backgroundColor: isSelected ? '#D8B743' : 'transparent',
                           }}
                         >
                           {isSelected && (
-                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#18304F' }} />
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#193050' }} />
                           )}
                         </div>
                         <span
                           className={isSelected ? 'font-medium' : ''}
-                          style={{ color: '#18304F' }}
+                          style={{ color: '#193050' }}
                         >
                           {option.label}
                         </span>
@@ -197,13 +231,13 @@ export default function AssessmentPage() {
           ) : isPainPointsStep ? (
             <>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2" style={{ color: '#18304F' }}>
+                <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#193050' }}>
                   Tell Us About Your Challenges
                 </h2>
-                <p style={{ color: '#19304F' }}>
+                <p className="text-sm sm:text-base" style={{ color: '#193050' }}>
                   Please briefly bullet point your major inefficiency pain points or concerns (optional).
                 </p>
-                <p className="text-sm mt-2" style={{ color: '#6B7280' }}>
+                <p className="text-xs sm:text-sm mt-2" style={{ color: '#193050', opacity: 0.7 }}>
                   e.g. "We're slow to engage new leads", "We're concerned that we're behind on AI adoption and our competitors will pull ahead"
                 </p>
               </div>
@@ -212,7 +246,7 @@ export default function AssessmentPage() {
                 <label
                   htmlFor="painPoints"
                   className="block text-sm font-medium mb-2"
-                  style={{ color: '#18304F' }}
+                  style={{ color: '#193050' }}
                 >
                   Pain Points & Concerns
                 </label>
@@ -222,23 +256,24 @@ export default function AssessmentPage() {
                   onChange={(e) => handlePainPointsChange(e.target.value)}
                   placeholder="• We're slow to engage new leads&#10;• High manual workload on admin tasks&#10;• Concerned about competitors adopting AI faster"
                   rows={6}
-                  className="w-full px-4 py-3 rounded-lg outline-none resize-none border-2"
+                  className="w-full px-4 py-3 rounded-lg outline-none resize-none border-2 text-sm sm:text-base"
                   style={{
-                    borderColor: '#DFE3E9',
-                    backgroundColor: '#FBFCFC',
+                    borderColor: '#193050',
+                    backgroundColor: '#E1E4E9',
+                    color: '#193050',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#E8C34C'}
-                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                  onBlur={(e) => e.target.style.borderColor = '#193050'}
                 />
               </div>
             </>
           ) : (
             <>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2" style={{ color: '#18304F' }}>
+                <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#193050' }}>
                   Get Your Results
                 </h2>
-                <p style={{ color: '#19304F' }}>
+                <p className="text-sm sm:text-base" style={{ color: '#193050' }}>
                   Enter your email to receive your personalized assessment
                   report.
                 </p>
@@ -248,7 +283,7 @@ export default function AssessmentPage() {
                 <label
                   htmlFor="email"
                   className="block text-sm font-medium mb-2"
-                  style={{ color: '#18304F' }}
+                  style={{ color: '#193050' }}
                 >
                   Email Address
                 </label>
@@ -258,13 +293,14 @@ export default function AssessmentPage() {
                   value={state.email || ""}
                   onChange={(e) => handleEmailChange(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 rounded-lg outline-none border-2"
+                  className="w-full px-4 py-3 rounded-lg outline-none border-2 text-sm sm:text-base"
                   style={{
-                    borderColor: '#DFE3E9',
-                    backgroundColor: '#FBFCFC',
+                    borderColor: '#193050',
+                    backgroundColor: '#E1E4E9',
+                    color: '#193050',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#E8C34C'}
-                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                  onBlur={(e) => e.target.style.borderColor = '#193050'}
                 />
               </div>
             </>
@@ -272,15 +308,27 @@ export default function AssessmentPage() {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-6 gap-4">
           <button
             onClick={handleBack}
             disabled={state.currentStep === 0}
-            className="px-6 py-3 font-medium rounded-lg border-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 sm:px-6 py-2 sm:py-3 font-medium rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             style={{
-              color: state.currentStep === 0 ? '#DFE3E9' : '#FBFCFC',
-              borderColor: state.currentStep === 0 ? '#19304F' : '#DFE3E9',
+              color: state.currentStep === 0 ? '#E1E4E9' : '#E1E4E9',
+              borderColor: state.currentStep === 0 ? '#193050' : '#E1E4E9',
               backgroundColor: 'transparent',
+            }}
+            onMouseEnter={(e) => {
+              if (state.currentStep !== 0) {
+                e.currentTarget.style.backgroundColor = '#3DB2DD';
+                e.currentTarget.style.borderColor = '#3DB2DD';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (state.currentStep !== 0) {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = '#E1E4E9';
+              }
             }}
           >
             Back
@@ -290,10 +338,20 @@ export default function AssessmentPage() {
             <button
               onClick={handleSubmit}
               disabled={!canProceed || isSubmitting}
-              className="px-6 py-3 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 py-2 sm:py-3 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               style={{
-                backgroundColor: canProceed && !isSubmitting ? '#E8C34C' : '#D7B745',
-                color: '#18304F',
+                backgroundColor: canProceed && !isSubmitting ? '#D8B743' : '#193050',
+                color: canProceed && !isSubmitting ? '#193050' : '#E1E4E9',
+              }}
+              onMouseEnter={(e) => {
+                if (canProceed && !isSubmitting) {
+                  e.currentTarget.style.backgroundColor = '#6BB790';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canProceed && !isSubmitting) {
+                  e.currentTarget.style.backgroundColor = '#D8B743';
+                }
               }}
             >
               {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
@@ -302,10 +360,20 @@ export default function AssessmentPage() {
             <button
               onClick={handleNext}
               disabled={!canProceed}
-              className="px-6 py-3 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 py-2 sm:py-3 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               style={{
-                backgroundColor: canProceed ? '#E8C34C' : '#D7B745',
-                color: '#18304F',
+                backgroundColor: canProceed ? '#D8B743' : '#193050',
+                color: canProceed ? '#193050' : '#E1E4E9',
+              }}
+              onMouseEnter={(e) => {
+                if (canProceed) {
+                  e.currentTarget.style.backgroundColor = '#6BB790';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canProceed) {
+                  e.currentTarget.style.backgroundColor = '#D8B743';
+                }
               }}
             >
               Next
