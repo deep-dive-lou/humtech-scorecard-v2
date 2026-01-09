@@ -156,10 +156,10 @@ export default function AssessmentPage() {
 
   return (
     <main className="min-h-screen py-4 sm:py-8 px-4 flex items-center" style={{ backgroundColor: '#193050' }}>
-      <div className="max-w-lg sm:max-w-xl md:max-w-2xl w-full mx-auto">
+      <div className="max-w-md sm:max-w-lg w-full mx-auto">
         {/* Progress Bar */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex justify-between text-xs sm:text-sm mb-2" style={{ color: '#E1E4E9' }}>
+        <div className="mb-4 sm:mb-6">
+          <div className="flex justify-between text-xs mb-2" style={{ color: '#E1E4E9' }}>
             <span>
               Step {state.currentStep + 1} of {totalSteps}
             </span>
@@ -174,23 +174,23 @@ export default function AssessmentPage() {
         </div>
 
         {/* Question, Pain Points, or Email Capture */}
-        <div className="rounded-lg shadow-md p-6 sm:p-8" style={{ backgroundColor: '#E1E4E9' }}>
+        <div className="rounded-lg shadow-md p-5 sm:p-6" style={{ backgroundColor: '#FBFCFC' }}>
           {currentQuestion ? (
             <>
-              <div className="mb-6">
-                <span className="inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full mb-4" style={{ backgroundColor: '#D8B743', color: '#193050' }}>
+              <div className="mb-5">
+                <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full mb-3" style={{ backgroundColor: '#D8B743', color: '#193050' }}>
                   {
                     assessmentConfig.pillars.find(
                       (p) => p.id === currentQuestion.pillar
                     )?.name
                   }
                 </span>
-                <h2 className="text-xl sm:text-2xl font-bold leading-tight" style={{ color: '#193050' }}>
+                <h2 className="text-lg sm:text-xl font-bold leading-snug" style={{ color: '#193050' }}>
                   {currentQuestion.text}
                 </h2>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {currentQuestion.options.map((option) => {
                   const isSelected =
                     state.answers[currentQuestion.id] === option.id;
@@ -198,22 +198,22 @@ export default function AssessmentPage() {
                     <button
                       key={option.id}
                       onClick={() => handleAnswer(option.id)}
-                      className="w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all text-sm sm:text-base"
+                      className="w-full text-left p-3 rounded-lg border-2 transition-all text-sm"
                       style={{
-                        borderColor: isSelected ? '#D8B743' : '#E1E4E9',
-                        backgroundColor: isSelected ? '#FEF9EC' : '#E1E4E9',
+                        borderColor: isSelected ? '#D8B743' : '#DFE3E9',
+                        backgroundColor: isSelected ? '#FEF9EC' : '#FBFCFC',
                       }}
                     >
                       <div className="flex items-center">
                         <div
-                          className="w-5 h-5 rounded-full border-2 mr-3 flex-shrink-0 flex items-center justify-center"
+                          className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center"
                           style={{
                             borderColor: isSelected ? '#D8B743' : '#193050',
                             backgroundColor: isSelected ? '#D8B743' : 'transparent',
                           }}
                         >
                           {isSelected && (
-                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#193050' }} />
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#193050' }} />
                           )}
                         </div>
                         <span
@@ -230,19 +230,19 @@ export default function AssessmentPage() {
             </>
           ) : isPainPointsStep ? (
             <>
-              <div className="mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#193050' }}>
+              <div className="mb-5">
+                <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#193050' }}>
                   Tell Us About Your Challenges
                 </h2>
-                <p className="text-sm sm:text-base" style={{ color: '#193050' }}>
+                <p className="text-sm" style={{ color: '#193050' }}>
                   Please briefly bullet point your major inefficiency pain points or concerns (optional).
                 </p>
-                <p className="text-xs sm:text-sm mt-2" style={{ color: '#193050', opacity: 0.7 }}>
+                <p className="text-xs mt-2" style={{ color: '#193050', opacity: 0.7 }}>
                   e.g. "We're slow to engage new leads", "We're concerned that we're behind on AI adoption and our competitors will pull ahead"
                 </p>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-5">
                 <label
                   htmlFor="painPoints"
                   className="block text-sm font-medium mb-2"
@@ -255,31 +255,31 @@ export default function AssessmentPage() {
                   value={state.painPoints || ""}
                   onChange={(e) => handlePainPointsChange(e.target.value)}
                   placeholder="• We're slow to engage new leads&#10;• High manual workload on admin tasks&#10;• Concerned about competitors adopting AI faster"
-                  rows={6}
-                  className="w-full px-4 py-3 rounded-lg outline-none resize-none border-2 text-sm sm:text-base"
+                  rows={5}
+                  className="w-full px-3 py-2.5 rounded-lg outline-none resize-none border-2 text-sm"
                   style={{
-                    borderColor: '#193050',
-                    backgroundColor: '#E1E4E9',
+                    borderColor: '#DFE3E9',
+                    backgroundColor: '#FBFCFC',
                     color: '#193050',
                   }}
                   onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                  onBlur={(e) => e.target.style.borderColor = '#193050'}
+                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
                 />
               </div>
             </>
           ) : (
             <>
-              <div className="mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#193050' }}>
+              <div className="mb-5">
+                <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#193050' }}>
                   Get Your Results
                 </h2>
-                <p className="text-sm sm:text-base" style={{ color: '#193050' }}>
+                <p className="text-sm" style={{ color: '#193050' }}>
                   Enter your email to receive your personalized assessment
                   report.
                 </p>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-5">
                 <label
                   htmlFor="email"
                   className="block text-sm font-medium mb-2"
@@ -293,14 +293,14 @@ export default function AssessmentPage() {
                   value={state.email || ""}
                   onChange={(e) => handleEmailChange(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 rounded-lg outline-none border-2 text-sm sm:text-base"
+                  className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                   style={{
-                    borderColor: '#193050',
-                    backgroundColor: '#E1E4E9',
+                    borderColor: '#DFE3E9',
+                    backgroundColor: '#FBFCFC',
                     color: '#193050',
                   }}
                   onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                  onBlur={(e) => e.target.style.borderColor = '#193050'}
+                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
                 />
               </div>
             </>
@@ -308,11 +308,11 @@ export default function AssessmentPage() {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-6 gap-4">
+        <div className="flex justify-between mt-5 gap-3">
           <button
             onClick={handleBack}
             disabled={state.currentStep === 0}
-            className="px-4 sm:px-6 py-2 sm:py-3 font-medium rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+            className="px-5 py-2.5 font-medium rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             style={{
               color: state.currentStep === 0 ? '#E1E4E9' : '#E1E4E9',
               borderColor: state.currentStep === 0 ? '#193050' : '#E1E4E9',
@@ -338,14 +338,14 @@ export default function AssessmentPage() {
             <button
               onClick={handleSubmit}
               disabled={!canProceed || isSubmitting}
-              className="px-4 sm:px-6 py-2 sm:py-3 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
                 backgroundColor: canProceed && !isSubmitting ? '#D8B743' : '#193050',
                 color: canProceed && !isSubmitting ? '#193050' : '#E1E4E9',
               }}
               onMouseEnter={(e) => {
                 if (canProceed && !isSubmitting) {
-                  e.currentTarget.style.backgroundColor = '#6BB790';
+                  e.currentTarget.style.backgroundColor = '#3DB2DD';
                 }
               }}
               onMouseLeave={(e) => {
@@ -360,14 +360,14 @@ export default function AssessmentPage() {
             <button
               onClick={handleNext}
               disabled={!canProceed}
-              className="px-4 sm:px-6 py-2 sm:py-3 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
                 backgroundColor: canProceed ? '#D8B743' : '#193050',
                 color: canProceed ? '#193050' : '#E1E4E9',
               }}
               onMouseEnter={(e) => {
                 if (canProceed) {
-                  e.currentTarget.style.backgroundColor = '#6BB790';
+                  e.currentTarget.style.backgroundColor = '#3DB2DD';
                 }
               }}
               onMouseLeave={(e) => {
