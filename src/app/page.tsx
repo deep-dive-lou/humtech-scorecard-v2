@@ -157,6 +157,22 @@ export default function AssessmentPage() {
         throw new Error(`HTTP error! status: ${responses[0].status}`);
       }
 
+      // Get the response from n8n (could be HTML or a URL)
+      const responseText = await responses[0].text();
+
+      // Check if response is a URL or HTML content
+      if (responseText.startsWith('http://') || responseText.startsWith('https://')) {
+        // If it's a URL, open it in a new tab
+        window.open(responseText.trim(), '_blank');
+      } else if (responseText.trim()) {
+        // If it's HTML content, open in a new tab and write the content
+        const newTab = window.open('', '_blank');
+        if (newTab) {
+          newTab.document.write(responseText);
+          newTab.document.close();
+        }
+      }
+
       console.log("Assessment submitted successfully:", state);
       setIsSubmitted(true);
     } catch (error) {
@@ -191,7 +207,7 @@ export default function AssessmentPage() {
                 Thank You!
               </h1>
               <p className="text-lg" style={{ color: '#193050' }}>
-                Your assessment has been submitted successfully.
+                Your assessment has been submitted successfully. Your results will open in a new tab and be emailed to you.
               </p>
             </div>
           </div>
