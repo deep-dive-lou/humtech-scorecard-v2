@@ -6,18 +6,19 @@ import { AssessmentState } from "@/lib/assessment/types";
 
 export default function AssessmentPage() {
   const totalQuestions = assessmentConfig.questions.length;
-  const totalSteps = totalQuestions + 2; // +1 for pain points, +1 for email capture
+  const totalSteps = totalQuestions + 2; // +1 for q15-notes, +1 for email capture
 
   const [state, setState] = useState<AssessmentState>({
     answers: {},
+    otherText: {},
     currentStep: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const isPainPointsStep = state.currentStep === totalQuestions;
+  const isNotesStep = state.currentStep === totalQuestions;
   const isEmailStep = state.currentStep === totalQuestions + 1;
-  const currentQuestion = !isPainPointsStep && !isEmailStep
+  const currentQuestion = !isNotesStep && !isEmailStep
     ? assessmentConfig.questions[state.currentStep]
     : null;
 
@@ -29,6 +30,16 @@ export default function AssessmentPage() {
       answers: {
         ...prev.answers,
         [currentQuestion.id]: optionId,
+      },
+    }));
+  };
+
+  const handleOtherTextChange = (questionId: string, text: string) => {
+    setState((prev) => ({
+      ...prev,
+      otherText: {
+        ...prev.otherText,
+        [questionId]: text,
       },
     }));
   };
@@ -49,8 +60,8 @@ export default function AssessmentPage() {
     setState((prev) => ({ ...prev, email }));
   };
 
-  const handlePainPointsChange = (painPoints: string) => {
-    setState((prev) => ({ ...prev, painPoints }));
+  const handleNotesChange = (notes: string) => {
+    setState((prev) => ({ ...prev, notes }));
   };
 
   const handleSubmit = async () => {
@@ -71,38 +82,48 @@ export default function AssessmentPage() {
       const selectedOption = question.options.find(
         (opt) => opt.id === selectedOptionId
       );
-      const pillar = assessmentConfig.pillars.find(
-        (p) => p.id === question.pillar
-      );
 
       return {
         questionId: question.id,
         questionText: question.text,
-        pillar: pillar?.name || question.pillar,
         answerId: selectedOption?.answerId || "",
         answerText: selectedOption?.label || "",
+        isScored: question.isScored,
       };
     });
 
     // Create raw answers mapping with answerId (A, B, C, D, E)
-    const rawAnswersWithLetters: Record<string, string> = {};
+    const rawAnswers: Record<string, string> = {};
     assessmentConfig.questions.forEach((question) => {
       const selectedOptionId = state.answers[question.id];
       const selectedOption = question.options.find(
         (opt) => opt.id === selectedOptionId
       );
       if (selectedOption) {
-        rawAnswersWithLetters[question.id] = selectedOption.answerId;
+        rawAnswers[question.id] = selectedOption.answerId;
       }
     });
 
-    const payload = {
+    // Only include otherText if user selected "Other" options and provided text
+    const hasOtherText = Object.keys(state.otherText).some(
+      (key) => state.otherText[key]?.trim()
+    );
+
+    const payload: Record<string, unknown> = {
+      assessment_version: "v2",
       email: state.email,
-      painPoints: state.painPoints || "",
-      answers: formattedAnswers,
-      rawAnswers: rawAnswersWithLetters, // questionId -> answerId (A, B, C, D, E)
       timestamp: new Date().toISOString(),
+      rawAnswers,
+      answers: formattedAnswers,
+      freeText: {
+        "q15-notes": state.notes || "",
+      },
     };
+
+    // Only add otherText if there's actual content
+    if (hasOtherText) {
+      payload.otherText = state.otherText;
+    }
 
     try {
       // Send to both webhooks in parallel
@@ -148,8 +169,8 @@ export default function AssessmentPage() {
 
   const canProceed = isEmailStep
     ? state.email && state.email.includes("@")
-    : isPainPointsStep
-    ? true // Pain points is optional
+    : isNotesStep
+    ? true // Notes is optional
     : currentQuestion && state.answers[currentQuestion.id];
 
   const progress = ((state.currentStep + 1) / totalSteps) * 100;
@@ -198,7 +219,7 @@ export default function AssessmentPage() {
           </div>
         </div>
 
-        {/* Question, Pain Points, or Email Capture */}
+        {/* Question, Notes, or Email Capture */}
         <div className="rounded-lg shadow-md p-5 sm:p-6" style={{ backgroundColor: '#FBFCFC' }}>
           {currentQuestion ? (
             <>
@@ -220,59 +241,76 @@ export default function AssessmentPage() {
                   const isSelected =
                     state.answers[currentQuestion.id] === option.id;
                   return (
-                    <button
-                      key={option.id}
-                      onClick={() => handleAnswer(option.id)}
-                      className="w-full text-left p-3 rounded-lg border-2 transition-all text-sm"
-                      style={{
-                        borderColor: isSelected ? '#D8B743' : '#DFE3E9',
-                        backgroundColor: isSelected ? '#FEF9EC' : '#FBFCFC',
-                      }}
-                    >
-                      <div className="flex items-center">
-                        <div
-                          className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center"
-                          style={{
-                            borderColor: isSelected ? '#D8B743' : '#193050',
-                            backgroundColor: isSelected ? '#D8B743' : 'transparent',
-                          }}
-                        >
-                          {isSelected && (
-                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#193050' }} />
-                          )}
+                    <div key={option.id}>
+                      <button
+                        onClick={() => handleAnswer(option.id)}
+                        className="w-full text-left p-3 rounded-lg border-2 transition-all text-sm"
+                        style={{
+                          borderColor: isSelected ? '#D8B743' : '#DFE3E9',
+                          backgroundColor: isSelected ? '#FEF9EC' : '#FBFCFC',
+                        }}
+                      >
+                        <div className="flex items-start">
+                          <div
+                            className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
+                            style={{
+                              borderColor: isSelected ? '#D8B743' : '#193050',
+                              backgroundColor: isSelected ? '#D8B743' : 'transparent',
+                            }}
+                          >
+                            {isSelected && (
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#193050' }} />
+                            )}
+                          </div>
+                          <span
+                            className={isSelected ? 'font-medium' : ''}
+                            style={{ color: '#193050' }}
+                          >
+                            {option.label}
+                          </span>
                         </div>
-                        <span
-                          className={isSelected ? 'font-medium' : ''}
-                          style={{ color: '#193050' }}
-                        >
-                          {option.label}
-                        </span>
-                      </div>
-                    </button>
+                      </button>
+                      {/* Show text input for "Other" options when selected */}
+                      {option.hasTextInput && isSelected && (
+                        <div className="mt-2 ml-6">
+                          <textarea
+                            value={state.otherText[currentQuestion.id] || ""}
+                            onChange={(e) => handleOtherTextChange(currentQuestion.id, e.target.value)}
+                            placeholder="Please specify..."
+                            rows={3}
+                            className="w-full px-3 py-2 rounded-lg outline-none resize-none border-2 text-sm"
+                            style={{
+                              borderColor: '#DFE3E9',
+                              backgroundColor: '#FBFCFC',
+                              color: '#193050',
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                            onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                          />
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
             </>
-          ) : isPainPointsStep ? (
+          ) : isNotesStep ? (
             <>
               <div className="mb-5">
                 <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#193050' }}>
-                  Tell Us About Your Challenges
+                  Is there anything else you&apos;d like us to know?
                 </h2>
                 <p className="text-sm" style={{ color: '#193050' }}>
-                  Please briefly bullet point your major inefficiency pain points or concerns (optional).
-                </p>
-                <p className="text-xs mt-2" style={{ color: '#193050', opacity: 0.7 }}>
-                  e.g. "We're slow to engage new leads", "We're concerned that we're behind on AI adoption and our competitors will pull ahead"
+                  Please share any additional information that might help us understand your needs better (optional).
                 </p>
               </div>
 
               <div className="mb-5">
                 <textarea
-                  id="painPoints"
-                  value={state.painPoints || ""}
-                  onChange={(e) => handlePainPointsChange(e.target.value)}
-                  placeholder="• We're slow to engage new leads&#10;• High manual workload on admin tasks&#10;• Concerned about competitors adopting AI faster"
+                  id="notes"
+                  value={state.notes || ""}
+                  onChange={(e) => handleNotesChange(e.target.value)}
+                  placeholder="Any additional comments, concerns, or context you'd like to share..."
                   rows={5}
                   className="w-full px-3 py-2.5 rounded-lg outline-none resize-none border-2 text-sm"
                   style={{
