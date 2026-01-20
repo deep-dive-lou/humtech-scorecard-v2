@@ -367,9 +367,6 @@ export default function AssessmentPage() {
                 <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#193050' }}>
                   Get Your Results
                 </h2>
-                <p className="text-sm" style={{ color: '#193050' }}>
-                  Enter your contact information to receive your personalized assessment report.
-                </p>
               </div>
 
               <div className="space-y-4">
@@ -460,8 +457,13 @@ export default function AssessmentPage() {
                     type="tel"
                     id="mobile"
                     value={state.mobile || ""}
-                    onChange={(e) => handleMobileChange(e.target.value)}
-                    placeholder="+1 234 567 8900"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Only allow numbers, spaces, hyphens, parentheses, and + at the start
+                      const sanitized = value.replace(/[^\d\s\-+()]/g, '');
+                      handleMobileChange(sanitized);
+                    }}
+                    placeholder="+44 7700 900123"
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
                       borderColor: '#DFE3E9',
