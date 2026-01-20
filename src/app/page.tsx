@@ -60,6 +60,22 @@ export default function AssessmentPage() {
     setState((prev) => ({ ...prev, email }));
   };
 
+  const handleNameChange = (name: string) => {
+    setState((prev) => ({ ...prev, name }));
+  };
+
+  const handleCompanyChange = (company: string) => {
+    setState((prev) => ({ ...prev, company }));
+  };
+
+  const handleMobileChange = (mobile: string) => {
+    setState((prev) => ({ ...prev, mobile }));
+  };
+
+  const handleTitleChange = (title: string) => {
+    setState((prev) => ({ ...prev, title }));
+  };
+
   const handleNotesChange = (notes: string) => {
     setState((prev) => ({ ...prev, notes }));
   };
@@ -111,7 +127,13 @@ export default function AssessmentPage() {
 
     const payload: Record<string, unknown> = {
       assessment_version: "v2",
-      email: state.email,
+      contact: {
+        name: state.name,
+        email: state.email,
+        company: state.company,
+        mobile: state.mobile || "",
+        title: state.title || "",
+      },
       timestamp: new Date().toISOString(),
       rawAnswers,
       answers: formattedAnswers,
@@ -184,7 +206,7 @@ export default function AssessmentPage() {
   };
 
   const canProceed = isEmailStep
-    ? state.email && state.email.includes("@")
+    ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim()
     : isNotesStep
     ? true // Notes is optional
     : currentQuestion && state.answers[currentQuestion.id];
@@ -346,33 +368,135 @@ export default function AssessmentPage() {
                   Get Your Results
                 </h2>
                 <p className="text-sm" style={{ color: '#193050' }}>
-                  Enter your email to receive your assessment report.
+                  Enter your contact information to receive your personalized assessment report.
                 </p>
               </div>
 
-              <div className="mb-5">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: '#193050' }}
-                >
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={state.email || ""}
-                  onChange={(e) => handleEmailChange(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
-                  style={{
-                    borderColor: '#DFE3E9',
-                    backgroundColor: '#FBFCFC',
-                    color: '#193050',
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
-                />
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: '#193050' }}
+                  >
+                    Name <span style={{ color: '#D8B743' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={state.name || ""}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    placeholder="John Smith"
+                    className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
+                    style={{
+                      borderColor: '#DFE3E9',
+                      backgroundColor: '#FBFCFC',
+                      color: '#193050',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: '#193050' }}
+                  >
+                    Email Address <span style={{ color: '#D8B743' }}>*</span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={state.email || ""}
+                    onChange={(e) => handleEmailChange(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
+                    style={{
+                      borderColor: '#DFE3E9',
+                      backgroundColor: '#FBFCFC',
+                      color: '#193050',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="company"
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: '#193050' }}
+                  >
+                    Company <span style={{ color: '#D8B743' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="company"
+                    value={state.company || ""}
+                    onChange={(e) => handleCompanyChange(e.target.value)}
+                    placeholder="Acme Inc."
+                    className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
+                    style={{
+                      borderColor: '#DFE3E9',
+                      backgroundColor: '#FBFCFC',
+                      color: '#193050',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="mobile"
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: '#193050' }}
+                  >
+                    Mobile <span className="text-xs" style={{ color: '#6B7280' }}>(optional)</span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="mobile"
+                    value={state.mobile || ""}
+                    onChange={(e) => handleMobileChange(e.target.value)}
+                    placeholder="+1 234 567 8900"
+                    className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
+                    style={{
+                      borderColor: '#DFE3E9',
+                      backgroundColor: '#FBFCFC',
+                      color: '#193050',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="title"
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: '#193050' }}
+                  >
+                    Job Title <span className="text-xs" style={{ color: '#6B7280' }}>(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    value={state.title || ""}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    placeholder="Head of Operations"
+                    className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
+                    style={{
+                      borderColor: '#DFE3E9',
+                      backgroundColor: '#FBFCFC',
+                      color: '#193050',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
+                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  />
+                </div>
               </div>
             </>
           )}

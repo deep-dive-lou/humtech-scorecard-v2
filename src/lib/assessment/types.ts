@@ -33,5 +33,9 @@ export interface AssessmentState {
   otherText: Record<string, string>; // questionId -> text for "Other" options
   currentStep: number;
   email?: string;
+  name?: string;
+  company?: string;
+  mobile?: string; // optional
+  title?: string; // optional
   notes?: string; // q15-notes free text
 }
