@@ -216,9 +216,9 @@ export default function AssessmentPage() {
   // Show thank you page after submission
   if (isSubmitted) {
     return (
-      <main className="min-h-screen py-8 px-4 flex items-center justify-center" style={{ backgroundColor: '#193050' }}>
+      <main className="min-h-screen py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center" style={{ backgroundColor: '#193050' }}>
         <div className="max-w-2xl w-full mx-auto">
-          <div className="rounded-lg shadow-md p-8 sm:p-12 text-center" style={{ backgroundColor: '#E1E4E9' }}>
+          <div className="rounded-lg shadow-md p-6 sm:p-8 text-center" style={{ backgroundColor: '#E1E4E9' }}>
             <div className="mb-6">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#6BB790' }}>
                 <svg className="w-8 h-8" style={{ color: '#E1E4E9' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,10 +239,10 @@ export default function AssessmentPage() {
   }
 
   return (
-    <main className="min-h-screen py-4 sm:py-8 px-4 flex items-center" style={{ backgroundColor: '#193050' }}>
+    <main className="min-h-screen py-2 sm:py-4 px-2 sm:px-4 flex items-center" style={{ backgroundColor: '#193050' }}>
       <div className="max-w-md sm:max-w-lg w-full mx-auto">
         {/* Progress Bar */}
-        <div className="mb-4 sm:mb-6">
+        <div className="mb-3 sm:mb-4 pr-8">
           <div className="flex justify-between text-xs mb-2" style={{ color: '#E1E4E9' }}>
             <span>
               Step {state.currentStep + 1} of {totalSteps}
@@ -258,7 +258,7 @@ export default function AssessmentPage() {
         </div>
 
         {/* Question, Notes, or Email Capture */}
-        <div className="rounded-lg shadow-md p-5 sm:p-6" style={{ backgroundColor: '#FBFCFC' }}>
+        <div className="rounded-lg shadow-md p-4 sm:p-5" style={{ backgroundColor: '#FBFCFC' }}>
           {currentQuestion ? (
             <>
               <div className="mb-4">
@@ -505,7 +505,7 @@ export default function AssessmentPage() {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-5 gap-3">
+        <div className="flex justify-between mt-3 sm:mt-4 gap-3">
           <button
             onClick={handleBack}
             disabled={state.currentStep === 0}

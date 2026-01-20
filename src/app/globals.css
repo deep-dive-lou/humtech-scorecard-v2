@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Embed optimization - ensure close button doesn't overlap with progress bar */
+@media (max-width: 640px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* Style for iframe close button visibility */
+iframe {
+  border: none;
+}
