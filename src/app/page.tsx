@@ -10,6 +10,7 @@ export default function AssessmentPage() {
 
   const [state, setState] = useState<AssessmentState>({
     answers: {},
+    multiSelectAnswers: {},
     otherText: {},
     currentStep: 0,
   });
@@ -32,6 +33,25 @@ export default function AssessmentPage() {
         [currentQuestion.id]: optionId,
       },
     }));
+  };
+
+  const handleMultiSelectAnswer = (optionId: string) => {
+    if (!currentQuestion) return;
+
+    setState((prev) => {
+      const currentSelections = prev.multiSelectAnswers[currentQuestion.id] || [];
+      const isSelected = currentSelections.includes(optionId);
+
+      return {
+        ...prev,
+        multiSelectAnswers: {
+          ...prev.multiSelectAnswers,
+          [currentQuestion.id]: isSelected
+            ? currentSelections.filter((id) => id !== optionId)
+            : [...currentSelections, optionId],
+        },
+      };
+    });
   };
 
   const handleOtherTextChange = (questionId: string, text: string) => {
@@ -94,29 +114,60 @@ export default function AssessmentPage() {
 
     // Transform answers to include full question and answer text
     const formattedAnswers = assessmentConfig.questions.map((question) => {
-      const selectedOptionId = state.answers[question.id];
-      const selectedOption = question.options.find(
-        (opt) => opt.id === selectedOptionId
-      );
+      if (question.isMultiSelect) {
+        // Handle multi-select questions
+        const selectedOptionIds = state.multiSelectAnswers[question.id] || [];
+        const selectedOptions = selectedOptionIds
+          .map((optId) => question.options.find((opt) => opt.id === optId))
+          .filter((opt): opt is NonNullable<typeof opt> => opt !== undefined);
 
-      return {
-        questionId: question.id,
-        questionText: question.text,
-        answerId: selectedOption?.answerId || "",
-        answerText: selectedOption?.label || "",
-        isScored: question.isScored,
-      };
+        return {
+          questionId: question.id,
+          questionText: question.text,
+          answerId: selectedOptions.map((opt) => opt.answerId),
+          answerText: selectedOptions.map((opt) => opt.label),
+          isScored: question.isScored,
+        };
+      } else {
+        // Handle single-select questions
+        const selectedOptionId = state.answers[question.id];
+        const selectedOption = question.options.find(
+          (opt) => opt.id === selectedOptionId
+        );
+
+        return {
+          questionId: question.id,
+          questionText: question.text,
+          answerId: selectedOption?.answerId || "",
+          answerText: selectedOption?.label || "",
+          isScored: question.isScored,
+        };
+      }
     });
 
-    // Create raw answers mapping with answerId (A, B, C, D, E)
-    const rawAnswers: Record<string, string> = {};
+    // Create raw answers mapping with answerId (A, B, C, D, E, F)
+    // For multi-select questions, value is an array of answerIds
+    const rawAnswers: Record<string, string | string[]> = {};
     assessmentConfig.questions.forEach((question) => {
-      const selectedOptionId = state.answers[question.id];
-      const selectedOption = question.options.find(
-        (opt) => opt.id === selectedOptionId
-      );
-      if (selectedOption) {
-        rawAnswers[question.id] = selectedOption.answerId;
+      if (question.isMultiSelect) {
+        // Handle multi-select questions (e.g., q13-barriers)
+        const selectedOptionIds = state.multiSelectAnswers[question.id] || [];
+        const selectedAnswerIds = selectedOptionIds
+          .map((optId) => {
+            const option = question.options.find((opt) => opt.id === optId);
+            return option?.answerId;
+          })
+          .filter((id): id is NonNullable<typeof id> => id !== undefined);
+        rawAnswers[question.id] = selectedAnswerIds;
+      } else {
+        // Handle single-select questions
+        const selectedOptionId = state.answers[question.id];
+        const selectedOption = question.options.find(
+          (opt) => opt.id === selectedOptionId
+        );
+        if (selectedOption) {
+          rawAnswers[question.id] = selectedOption.answerId;
+        }
       }
     });
 
@@ -209,7 +260,11 @@ export default function AssessmentPage() {
     ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim()
     : isNotesStep
     ? true // Notes is optional
-    : currentQuestion && state.answers[currentQuestion.id];
+    : currentQuestion && (
+        currentQuestion.isMultiSelect
+          ? (state.multiSelectAnswers[currentQuestion.id]?.length ?? 0) > 0
+          : state.answers[currentQuestion.id]
+      );
 
   const progress = ((state.currentStep + 1) / totalSteps) * 100;
 
@@ -276,12 +331,16 @@ export default function AssessmentPage() {
 
               <div className="space-y-2.5">
                 {currentQuestion.options.map((option) => {
-                  const isSelected =
-                    state.answers[currentQuestion.id] === option.id;
+                  const isSelected = currentQuestion.isMultiSelect
+                    ? state.multiSelectAnswers[currentQuestion.id]?.includes(option.id) ?? false
+                    : state.answers[currentQuestion.id] === option.id;
+                  const handleClick = currentQuestion.isMultiSelect
+                    ? () => handleMultiSelectAnswer(option.id)
+                    : () => handleAnswer(option.id);
                   return (
                     <div key={option.id}>
                       <button
-                        onClick={() => handleAnswer(option.id)}
+                        onClick={handleClick}
                         className="w-full text-left p-3 rounded-lg border-2 transition-all text-sm"
                         style={{
                           borderColor: isSelected ? '#D8B743' : '#DFE3E9',
@@ -289,17 +348,35 @@ export default function AssessmentPage() {
                         }}
                       >
                         <div className="flex items-start">
-                          <div
-                            className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
-                            style={{
-                              borderColor: isSelected ? '#D8B743' : '#193050',
-                              backgroundColor: isSelected ? '#D8B743' : 'transparent',
-                            }}
-                          >
-                            {isSelected && (
-                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#193050' }} />
-                            )}
-                          </div>
+                          {currentQuestion.isMultiSelect ? (
+                            // Checkbox for multi-select
+                            <div
+                              className="w-4 h-4 rounded border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
+                              style={{
+                                borderColor: isSelected ? '#D8B743' : '#193050',
+                                backgroundColor: isSelected ? '#D8B743' : 'transparent',
+                              }}
+                            >
+                              {isSelected && (
+                                <svg className="w-3 h-3" style={{ color: '#193050' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
+                          ) : (
+                            // Radio button for single-select
+                            <div
+                              className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
+                              style={{
+                                borderColor: isSelected ? '#D8B743' : '#193050',
+                                backgroundColor: isSelected ? '#D8B743' : 'transparent',
+                              }}
+                            >
+                              {isSelected && (
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#193050' }} />
+                              )}
+                            </div>
+                          )}
                           <span
                             className={isSelected ? 'font-medium' : ''}
                             style={{ color: '#193050' }}

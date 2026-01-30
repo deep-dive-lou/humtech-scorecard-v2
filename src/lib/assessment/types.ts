@@ -3,7 +3,7 @@ export type Pillar = "operations" | "customer" | "revenue" | "data" | "informati
 export interface QuestionOption {
   id: string;
   label: string;
-  answerId: "A" | "B" | "C" | "D" | "E";
+  answerId: "A" | "B" | "C" | "D" | "E" | "F";
   hasTextInput?: boolean; // For "Other, please specify" options
 }
 
@@ -13,6 +13,7 @@ export interface Question {
   text: string;
   options: QuestionOption[];
   isScored?: boolean; // true for q1-q11, false for q12-q14
+  isMultiSelect?: boolean; // true for questions allowing multiple selections (e.g., q13)
 }
 
 export interface AssessmentConfig {
@@ -29,7 +30,8 @@ export interface Answer {
 }
 
 export interface AssessmentState {
-  answers: Record<string, string>; // questionId -> optionId
+  answers: Record<string, string>; // questionId -> optionId (single-select)
+  multiSelectAnswers: Record<string, string[]>; // questionId -> optionId[] (multi-select)
   otherText: Record<string, string>; // questionId -> text for "Other" options
   currentStep: number;
   email?: string;

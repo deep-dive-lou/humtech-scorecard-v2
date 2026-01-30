@@ -29,8 +29,8 @@ export const assessmentConfig: AssessmentConfig = {
       isScored: true,
       options: [
         { id: "60s", label: "Less than 60 seconds", answerId: "A" },
-        { id: "10m", label: "Less than 10 minutes", answerId: "B" },
-        { id: "1h", label: "Less than 1 hour", answerId: "C" },
+        { id: "1-10m", label: "1–10 minutes", answerId: "B" },
+        { id: "10-60m", label: "10–60 minutes", answerId: "C" },
         { id: "1h-plus", label: "More than 1 hour", answerId: "D" },
       ],
     },
@@ -63,11 +63,12 @@ export const assessmentConfig: AssessmentConfig = {
       text: "What percentage of new clients who engage with your business 'transact' with your service?",
       isScored: true,
       options: [
-        { id: "90-100", label: "90-100%", answerId: "A" },
-        { id: "70-90", label: "70-90%", answerId: "B" },
-        { id: "50-70", label: "50-70%", answerId: "C" },
-        { id: "sub-50", label: "Less than 50%", answerId: "D" },
-        { id: "unknown", label: "I don't know", answerId: "E" },
+        { id: "90-100", label: "90–100%", answerId: "A" },
+        { id: "80-90", label: "80–90%", answerId: "B" },
+        { id: "70-80", label: "70–80%", answerId: "C" },
+        { id: "60-70", label: "60–70%", answerId: "D" },
+        { id: "sub-50", label: "50% or less", answerId: "E" },
+        { id: "unknown", label: "I don't know / we don't track this data", answerId: "F" },
       ],
     },
     {
@@ -76,17 +77,18 @@ export const assessmentConfig: AssessmentConfig = {
       text: "How much of your team's time is spent performing their primary role (e.g. amount of time your sales team are actually on sales calls vs. other non-revenue generating tasks)?",
       isScored: true,
       options: [
-        { id: "90-100", label: "90-100%", answerId: "A" },
-        { id: "80-90", label: "80-90%", answerId: "B" },
-        { id: "70-80", label: "70-80%", answerId: "C" },
-        { id: "60-70", label: "60-70%", answerId: "D" },
-        { id: "unknown", label: "I don't know", answerId: "E" },
+        { id: "90-100", label: "90–100%", answerId: "A" },
+        { id: "80-90", label: "80–90%", answerId: "B" },
+        { id: "70-80", label: "70–80%", answerId: "C" },
+        { id: "60-70", label: "60–70%", answerId: "D" },
+        { id: "sub-50", label: "50% or less", answerId: "E" },
+        { id: "unknown", label: "I don't know / we don't track this data", answerId: "F" },
       ],
     },
     {
       id: "q7-follow-up-time",
       pillar: "operations",
-      text: "How much time do you or your team spend engaging leads who reached out but did not book an appointment, or did not attend a scheduled appointment?",
+      text: "On average, how much time per week does a client facing team member spend engaging leads who did not book an appointment, or did not attend a scheduled appointment?",
       isScored: true,
       options: [
         { id: "none", label: "None", answerId: "A" },
@@ -99,7 +101,7 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q8-repetitive-tasks",
       pillar: "operations",
-      text: "How much time do you or your team spend performing standard repetitive tasks such as document requests, data entry and KPI/stats tracking?",
+      text: "On average, how much time per week does a relevant team member spend performing standard repetitive tasks such as document requests, data entry and KPI/stats tracking?",
       isScored: true,
       options: [
         { id: "none", label: "None", answerId: "A" },
@@ -112,12 +114,12 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q9-kpi-tracking",
       pillar: "data",
-      text: "How would you rate your company KPI target tracking?",
+      text: "How would you rate your company key metric tracking?",
       isScored: true,
       options: [
-        { id: "perfect", label: "Perfect - we have sight of all stats on one dashboard, and minimal manual input is required", answerId: "A" },
-        { id: "average", label: "Average - it could be displayed better and more of it is manual than we would like", answerId: "B" },
-        { id: "poor", label: "Poor - Either no automation or very poor to zero KPI/target tracking with no graphic visualisation", answerId: "C" },
+        { id: "perfect", label: "Perfect – we have sight of all vital stats in one dashboard including time to lead engagement, client DNA and conversion data and minimal manual input is required.", answerId: "A" },
+        { id: "average", label: "Average – we have sight of some key metrics in one place, and it either requires manual input or a combination of manual input and automation.", answerId: "B" },
+        { id: "poor", label: "Poor – we don't have an adequate display or tracking for key metrics, and mostly rely on manual input.", answerId: "C" },
       ],
     },
     {
@@ -129,6 +131,7 @@ export const assessmentConfig: AssessmentConfig = {
         { id: "fully-automated", label: "These are fully automated in one company branded portal which handles all document upload requests and signatures. Templates are used to eliminate manual repetition", answerId: "A" },
         { id: "third-party", label: "These are automated through a third party subscription platform", answerId: "B" },
         { id: "manual", label: "We request any documents or signatures via email from the client", answerId: "C" },
+        { id: "not-applicable", label: "We don't send or receive documents as part of our service.", answerId: "D" },
       ],
     },
     {
@@ -137,10 +140,10 @@ export const assessmentConfig: AssessmentConfig = {
       text: "What best describes your current situation? (not all aspects may be relevant, just pick the best fit)",
       isScored: true,
       options: [
-        { id: "complete", label: "Complete automation: new clients experience an immediate 2-way triage appointment scheduling, over 80% of appointments are attended with pre-qualified leads and most clients transact. Our team don't perform repetitive admin tasks and we don't waste time or take risks requesting/receiving documents via email. Our sales and marketing including CRO are optimised and our KPI/target data is automated and visible in a simple dashboard", answerId: "A" },
-        { id: "partial", label: "Part automation: New clients receive some automated outreach (email/SMS/PDF), appointments are fairly well attended with good to reasonable sales outcomes. Our team perform some repetitive tasks and admin. Our sales and marketing including CRO are reasonable although could be better. KPI/target tracking works, but it takes more time than we would like", answerId: "B" },
-        { id: "none", label: "Zero automation: New clients wait for manual outreach or simple automated message. There is no instantaneous 2-way conversation to build trust and engage the client. Our team perform repetitive tasks and time is spent producing emails manually including document requests/receipt. Our sales, KPI tracking and/or marketing may need some work", answerId: "C" },
-        { id: "other", label: "Other, please specify:", answerId: "D", hasTextInput: true },
+        { id: "complete", label: "AI does the hard work — Instant client triage, response and booking. 90% of appointments attended. Zero repetitive tasks. Zero GDPR risk or time wastage on document requests. Elite KPI monitoring and AI marketing strategy including multivariate test systems. ROAS/CPA well above industry standard.", answerId: "A" },
+        { id: "partial", label: "AI does some of the work — Part automated client engagement with 80+% appointment attendance. Minimal repetitive tasks and admin. KPI monitoring and marketing processes are acceptable to adequate. ROAS/CPA acceptable or improvement required.", answerId: "B" },
+        { id: "none", label: "AI not in place — Manual client engagement with less than 80% appointment attendance. High repetitive task and admin requirements. KPI monitoring and marketing are adequate or poor. ROAS/CPA acceptable or improvement required.", answerId: "C" },
+        { id: "other", label: "Other — If the above are not relevant to your model, please provide a short qualitative overview.", answerId: "D", hasTextInput: true },
       ],
     },
     // Q12-Q14: INFORMATIVE QUESTIONS (not scored)
@@ -150,9 +153,9 @@ export const assessmentConfig: AssessmentConfig = {
       text: "What best describes the outcome you're looking for?",
       isScored: false,
       options: [
-        { id: "time-saving", label: "Time saving (Deflection ROI). Our team waste a lot of time performing repetitive tasks (e.g. data entry, client management, document requests, chasing)", answerId: "A" },
-        { id: "revenue", label: "Revenue increase. We'd like to increase revenue without additional marketing spend through targeted AI efficiency upgrades (e.g. reduce CAC, improve CRO)", answerId: "B" },
-        { id: "both", label: "A combination of time saving and revenue increase", answerId: "C" },
+        { id: "time-saving", label: "Time saving (Deflection ROI). AI to reduce some or all of the following: manual data entry, client triage/comms/engagement/management, document requests, manual chasing and/or other repetitive non-revenue generating tasks.", answerId: "A" },
+        { id: "revenue", label: "Revenue Increase. Increase revenue without additional marketing spend through enhanced conversion rates, reduced business loss to competitors and/or marketing efficacy improvements.", answerId: "B" },
+        { id: "both", label: "A combination of deflection ROI and revenue increase to maximize organizational efficiency.", answerId: "C" },
         { id: "none", label: "None of the above, we're fine as we are", answerId: "D" },
         { id: "other", label: "Other, please specify:", answerId: "E", hasTextInput: true },
       ],
@@ -160,13 +163,16 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q13-barriers",
       pillar: "informative",
-      text: "What has prevented you from implementing comprehensive AI strategy previously?",
+      text: "What has prevented you from implementing comprehensive AI strategy previously? (Select all that apply)",
       isScored: false,
+      isMultiSelect: true,
       options: [
-        { id: "tech-failed", label: "We've tried other platforms/apps and the technology did not meet our standards or solve a problem or evidence sufficient ROI/use case", answerId: "A" },
-        { id: "expensive", label: "We've found options are too expensive", answerId: "B" },
-        { id: "confusing", label: "We find AI technology confusing and lack any technical understanding", answerId: "C" },
-        { id: "no-time", label: "We haven't had time to look into it in enough depth", answerId: "D" },
+        { id: "tech-failed", label: "Other solutions did not meet our standards or adequately solve a problem", answerId: "A" },
+        { id: "no-roi", label: "Other solutions did not provide an ROI guarantee for our investment", answerId: "B" },
+        { id: "not-comprehensive", label: "Other services specialize in 1 AI implementation rather than a comprehensive strategy tailored to our specific needs", answerId: "C" },
+        { id: "confusing", label: "We find AI confusing and lack technical understanding", answerId: "D" },
+        { id: "job-concern", label: "We're concerned AI will replace human roles", answerId: "E" },
+        { id: "other", label: "Other, please specify", answerId: "F", hasTextInput: true },
       ],
     },
     {
@@ -175,7 +181,7 @@ export const assessmentConfig: AssessmentConfig = {
       text: "Which type of solution would best suit your needs?",
       isScored: false,
       options: [
-        { id: "full-service", label: "I want to be at the cutting edge but don't want to pay big AI salaries. A team of AI directors to handle everything including in-depth system/processes review, proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements", answerId: "A" },
+        { id: "full-service", label: "I want to be at the cutting edge but don't want to pay big AI salaries. A team of AI directors to handle in-depth system/processes review, proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements", answerId: "A" },
         { id: "implementation-only", label: "I'm keen to consider AI implementation(s) only, such as your 24/7 conversational triage system, but I do not require ongoing support via your fractional director service", answerId: "B" },
         { id: "directors-only", label: "I'm happy with our existing systems, but would like to learn more about fractional AI directors as a standalone service", answerId: "C" },
         { id: "not-concerned", label: "I'm not currently concerned about the opportunity loss in time, revenue and lost business", answerId: "D" },
