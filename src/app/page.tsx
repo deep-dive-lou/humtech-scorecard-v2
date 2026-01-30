@@ -257,7 +257,7 @@ export default function AssessmentPage() {
   };
 
   const canProceed = isEmailStep
-    ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim()
+    ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim() && state.mobile && state.mobile.trim()
     : isNotesStep
     ? true // Notes is optional
     : currentQuestion && (
@@ -528,7 +528,7 @@ export default function AssessmentPage() {
                     className="block text-sm font-medium mb-2"
                     style={{ color: '#193050' }}
                   >
-                    Mobile <span className="text-xs" style={{ color: '#6B7280' }}>(optional)</span>
+                    Phone <span style={{ color: '#D8B743' }}>*</span>
                   </label>
                   <input
                     type="tel"
@@ -540,7 +540,7 @@ export default function AssessmentPage() {
                       const sanitized = value.replace(/[^\d\s\-+()]/g, '');
                       handleMobileChange(sanitized);
                     }}
-                    placeholder="+44 7700 900123"
+                    placeholder="+44 20 7946 0958"
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
                       borderColor: '#DFE3E9',
