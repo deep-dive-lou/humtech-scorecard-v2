@@ -1,0 +1,434 @@
+{
+  "name": "HumTech Scorecard v.2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "97e0ddcc-00b0-4f9e-a45c-2c484e9754bc",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "528d4517-8001-4350-96b5-4d426bd1f3bc",
+      "name": "Webhook",
+      "webhookId": "97e0ddcc-00b0-4f9e-a45c-2c484e9754bc"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96485bad-d94c-4e4c-bf65-b76a822df0ff",
+              "name": "assessment_id",
+              "value": "humtech_v2",
+              "type": "string"
+            },
+            {
+              "id": "9c80f6ec-8ad6-4003-803e-6d1ac26abe5a",
+              "name": "submission_id",
+              "value": "={{ $json.body.timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "2171c818-5b60-44c1-a626-5ed8f7b70575",
+              "name": "submitted_at",
+              "value": "={{ $json.body.timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "e6150052-f9f4-43ae-b356-f04c0e34f525",
+              "name": "email",
+              "value": "={{ $json.body.contact.email }}",
+              "type": "string"
+            },
+            {
+              "id": "7a46304b-aaba-495d-b3c5-675a7b58a5ff",
+              "name": "answers",
+              "value": "={{$json.body.answers}}",
+              "type": "array"
+            },
+            {
+              "id": "e3ba368d-0517-4dbb-ae7b-c9a62a45c29a",
+              "name": "rawAnswers",
+              "value": "={{ $json.body.rawAnswers }}",
+              "type": "object"
+            },
+            {
+              "id": "32cda425-4d6a-4a19-bb0a-34d0ae3eae62",
+              "name": "source",
+              "value": "humtech-scorecard",
+              "type": "string"
+            },
+            {
+              "id": "51131986-b84d-4efc-ab21-626630b7763a",
+              "name": "more_info_q",
+              "value": "={{ $json.body.freeText['q15-notes'] }}",
+              "type": "string"
+            },
+            {
+              "id": "30a54ea9-62e3-4e88-a1e2-54f719222415",
+              "name": "company",
+              "value": "={{ $json.body.contact.company }}",
+              "type": "string"
+            },
+            {
+              "id": "106cdc95-3527-4078-a5d4-afb17e7d2a9c",
+              "name": "mobile",
+              "value": "={{ $json.body.contact.mobile }}",
+              "type": "string"
+            },
+            {
+              "id": "5e823e9a-094d-472b-b8c5-6a4e1a2fbae2",
+              "name": "job_title",
+              "value": "={{ $json.body.contact.title }}",
+              "type": "string"
+            },
+            {
+              "id": "05c81031-8936-4fcc-acbd-f0281378fbc3",
+              "name": "name",
+              "value": "={{ $json.body.contact.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        128
+      ],
+      "id": "1ad86c8a-6270-4b23-a468-c532f8da2331",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "authorization",
+              "value": "Bearer re_GZUNd33M_LpM8rXnSMsd9USzrREMMG4Zg"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "=application/json",
+        "body": "={{ $json.resend_raw }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1696,
+        432
+      ],
+      "id": "355556b0-1abe-4fe2-b717-4df0e33ea0a5",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "destinationKey": "pdf_base64",
+        "options": {
+          "keepSource": "json"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        432
+      ],
+      "id": "e34078ab-5ee8-47ee-8ceb-5dbaf0a73bb1",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $json.scoring?.radar || {};\n\n// 5-axis radar (split labels onto 2 lines using \\n)\nconst labels = [\n  \"Lead Engagement &\\nSpeed\",\n  \"Appointment Reliability &\\nConversion\",\n  \"Operational Focus &\\nTime Efficiency\",\n  \"Systems &\\nAutomation Maturity\",\n  \"Revenue Protection &\\nLeakage Control\"\n];\n\n// Values are 0\u201310 from your scoring node\nconst rawValues = [\n  r.leadEngagementSpeed ?? 0,\n  r.appointmentReliabilityConversion ?? 0,\n  r.operationalFocusTimeEfficiency ?? 0,\n  r.systemsAutomationMaturity ?? 0,\n  r.revenueProtectionLeakageControl ?? 0\n];\n\n// keep 1dp\nconst yourScores = rawValues.map(v => Math.round(v * 10) / 10);\n\nconst chartConfig = {\n  type: \"radar\",\n  data: {\n    labels,\n    datasets: [\n      {\n        label: \"Your operating state\",\n        data: yourScores,\n        fill: true,\n\n        // your brand styling (dataset area)\n        backgroundColor: \"rgba(61,178,221,0.28)\",\n        borderColor: \"#193050\",\n        pointBackgroundColor: \"#193050\",\n        pointBorderColor: \"#193050\",\n\n        pointRadius: 3,\n        borderWidth: 2.5\n      }\n    ]\n  },\n  options: {\n    legend: { display: false },\n\n    scale: {\n      ticks: {\n        min: 0,\n        max: 10,\n        stepSize: 2,\n\n        // \u2705 make 2\u201310 bigger + darker\n        fontSize: 24,\n        fontStyle: \"bold\",\n        fontColor: \"#193050\",\n\n        backdropColor: \"rgba(0,0,0,0)\"\n      },\n\n      // \u2705 make axis labels BIG + readable\n      pointLabels: {\n        fontSize: 28,\n        fontStyle: \"bold\",\n        fontColor: \"#193050\"\n      },\n\n      // \u2705 darker/thicker spider web\n      gridLines: {\n        color: \"rgba(25,48,80,0.38)\",\n        lineWidth: 1.6\n      },\n      angleLines: {\n        color: \"rgba(25,48,80,0.38)\",\n        lineWidth: 1.6\n      }\n    }\n  }\n};\n\n// bigger image for PDF clarity\nconst radarUrl =\n  \"https://quickchart.io/chart?width=1700&height=1250&devicePixelRatio=2&format=png&backgroundColor=white&c=\" +\n  encodeURIComponent(JSON.stringify(chartConfig));\n\nreturn [{ json: { ...$json, radarUrl } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        336
+      ],
+      "id": "b574cffa-e5b2-4359-8cfc-bf83ebaf58cf",
+      "name": "Radar chart URL"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// ---------- Safe helpers ----------\nconst company = input.company_name || input.company || \"Your Company\";\nconst email = input.email || \"\u2014\";\nconst submitted = input.submitted_at || input.submitted || new Date().toISOString();\n\n// Radar URL (from Build Radar node)\nconst radarUrl = input.radarUrl || input.radar_url || \"\";\n\n// Overall score + band (from scoring node OR banding node)\nconst overallScore =\n  input.scoring?.overall?.score10 ??\n  input.overall_score ??\n  input.overallScore ??\n  \"\u2014\";\n\nconst overallBand =\n  input.banding?.overallBand?.bandLabel ??\n  input.scoring?.overall?.maturityBand ??\n  input.overall_band_label ??\n  input.overallBandLabel ??\n  \"\u2014\";\n\n// NEW: overall band colour (traffic light)\nconst overallBandColor =\n  input.banding?.overallBand?.bandColor ??\n  \"#3DB2DD\";\n\n// ---------- Pillar labels + ordering ----------\nconst PILLAR_ORDER = [\n  \"leadEngagementSpeed\",\n  \"appointmentReliabilityConversion\",\n  \"operationalFocusTimeEfficiency\",\n  \"systemsAutomationMaturity\",\n  \"revenueProtectionLeakageControl\"\n];\n\nconst PILLAR_LABELS = {\n  leadEngagementSpeed: \"Lead Engagement & Speed\",\n  appointmentReliabilityConversion: \"Appointment Reliability & Conversion\",\n  operationalFocusTimeEfficiency: \"Operational Focus & Time Efficiency\",\n  systemsAutomationMaturity: \"Systems & Automation Maturity\",\n  revenueProtectionLeakageControl: \"Revenue Protection & Leakage Control\"\n};\n\n// Pillar scores (from scoring node)\nconst pillarScores = input.scoring?.pillars || input.scoring?.radar || {};\n\n// Pillar insights (from banding+copy mapping node)\nconst pillarInsights = input.pillarInsights || {};\n\n// ---------- Render: 2-column compact pillar breakdown grid (WITH band meaning + color dot) ----------\nconst pillarPanelItemsHtml = PILLAR_ORDER.map((k) => {\n  const score = pillarInsights[k]?.score ?? pillarScores[k] ?? 0;\n  const bandLabel = pillarInsights[k]?.bandLabel ?? \"\u2014\";\n  const bandMeaning = pillarInsights[k]?.bandMeaning ?? \"\"; // keep this\n  const bandColor = pillarInsights[k]?.bandColor ?? \"#3DB2DD\"; // NEW\n  const label = pillarInsights[k]?.pillarLabel ?? PILLAR_LABELS[k] ?? k;\n\n  // Keep meaning short for layout (prevents page spill)\n  const meaningShort = String(bandMeaning || bandLabel)\n    .replace(/\\s+/g, \" \")\n    .trim();\n\n  return `\n    <div class=\"pb-item\">\n      <div class=\"pb-left\">\n        <div class=\"pb-title\">${label}</div>\n        <div class=\"pb-meaning\">\n          <span class=\"mini-dot\" style=\"background:${bandColor};\"></span>\n          <span>${meaningShort}</span>\n        </div>\n      </div>\n      <div class=\"pb-right\">\n        <span class=\"pb-score\">${Number(score).toFixed(1)}</span><span class=\"pb-den\">/10</span>\n      </div>\n    </div>\n  `;\n}).join(\"\");\n\n// ---------- Render: 5 qualitative pillar cards (page 2) ----------\nconst pillarCardsHtml = PILLAR_ORDER.map((k) => {\n  const label = pillarInsights[k]?.pillarLabel ?? PILLAR_LABELS[k] ?? k;\n  const bandLabel = pillarInsights[k]?.bandLabel ?? \"\u2014\";\n  const bandColor = pillarInsights[k]?.bandColor ?? \"#3DB2DD\"; // NEW\n  const title = pillarInsights[k]?.title ?? \"\u2014\";\n  const body = pillarInsights[k]?.body ?? \"\u2014\";\n\n  return `\n    <div class=\"qual\">\n      <div class=\"qual-head\">\n        <div>\n          <h3>${label}</h3>\n        </div>\n        <div class=\"pill\">\n          <span class=\"dot\" style=\"background:${bandColor};\"></span>\n          <span>${bandLabel}</span>\n        </div>\n      </div>\n      <p class=\"body\"><b>${title}</b>\\n\\n${body}</p>\n    </div>\n  `;\n}).join(\"\");\n\n// ---------- HTML ----------\nconst html = `<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>HumTech Assessment Report</title>\n  <style>\n    :root{\n      --navy:#193050;\n      --yellow:#D8B743;\n      --blue:#3DB2DD;\n      --green:#6BB790;\n      --bg:#E1E4E9;\n      --card:#ffffff;\n      --muted: rgba(25,48,80,0.74);\n      --muted2: rgba(25,48,80,0.60);\n      --line: rgba(25,48,80,0.12);\n      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);\n    }\n\n    *{ box-sizing:border-box; }\n    body{\n      margin:0;\n      font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Arial, sans-serif;\n      color: var(--navy);\n      background: var(--bg);\n      padding: 24px;\n      -webkit-print-color-adjust: exact;\n      print-color-adjust: exact;\n    }\n\n    .page{ max-width: 900px; margin: 0 auto; }\n\n    /* Header */\n    .header{\n      background: var(--navy);\n      color: #fff;\n      border-radius: 16px;\n      padding: 18px 18px 16px;\n      box-shadow: var(--shadow);\n      position: relative;\n      overflow: hidden;\n      margin-bottom: 12px;\n    }\n    .header:after{\n      content:\"\";\n      position:absolute; right:-40px; bottom:-40px;\n      width: 220px; height: 220px;\n      background: rgba(61,178,221,0.18);\n      border-radius: 999px;\n    }\n    .header-top{\n      position: relative;\n      z-index: 2;\n      display:flex;\n      justify-content:space-between;\n      gap: 16px;\n      align-items:flex-start;\n    }\n    .brand{\n      font-weight: 800;\n      letter-spacing: 0.18em;\n      font-size: 11px;\n      text-transform: uppercase;\n      opacity: 0.92;\n      margin: 0 0 8px;\n    }\n    .title{\n      font-size: 22px;\n      font-weight: 850;\n      margin: 0;\n      letter-spacing: 0.2px;\n      line-height: 1.2;\n    }\n    .subtitle{\n      margin: 10px 0 0;\n      font-size: 12.5px;\n      opacity: 0.92;\n      max-width: 560px;\n      line-height: 1.45;\n    }\n    .meta{\n      text-align:right;\n      font-size: 12px;\n      opacity: 0.92;\n      line-height: 1.5;\n      white-space: nowrap;\n    }\n    .meta strong{ color: #fff; font-weight: 750; }\n    .accent-line{\n      margin-top: 14px;\n      height: 4px;\n      border-radius: 999px;\n      background: linear-gradient(90deg, var(--yellow), var(--blue), var(--green));\n      position: relative;\n      z-index: 2;\n    }\n\n    .card{\n      background: var(--card);\n      border: 1px solid var(--line);\n      border-radius: 16px;\n      padding: 16px;\n      box-shadow: var(--shadow);\n    }\n\n    .section-title{\n      font-weight: 850;\n      margin: 0 0 10px;\n      font-size: 13px;\n      letter-spacing: 0.10em;\n      text-transform: uppercase;\n      color: var(--muted2);\n    }\n    .section-title:after{\n      content:\"\";\n      display:block;\n      width: 48px;\n      height: 3px;\n      border-radius: 999px;\n      margin-top: 8px;\n      background: rgba(25,48,80,0.18);\n    }\n\n    .muted{ color: var(--muted); font-size: 12.5px; line-height: 1.55; }\n\n    /* Radar section */\n    .radar-wrap{\n      margin-top: 10px;\n      display:flex;\n      justify-content:center;\n      align-items:center;\n      padding: 12px 0 0;\n      background: rgba(255,255,255,0.55);\n      border: 1px solid rgba(25,48,80,0.10);\n      border-radius: 14px;\n    }\n    .radar{\n      width: 100%;\n      max-width: 820px;\n      height: auto;\n      display:block;\n      border-radius: 10px;\n    }\n\n    /* Overall panel (below radar) */\n    .overall-panel{\n      margin-top: 14px;\n    }\n    .overall-top{\n      display:flex;\n      align-items:baseline;\n      justify-content:space-between;\n      gap: 12px;\n      margin-top: 6px;\n    }\n    .big-num{\n      font-size: 38px;\n      font-weight: 900;\n      color: var(--yellow);\n      line-height: 1;\n    }\n    .den{ color: var(--muted2); font-size: 14px; font-weight: 650; margin-left: 6px; }\n\n    .pill{\n      display:inline-flex;\n      align-items:center;\n      gap: 8px;\n      border: 1px solid var(--line);\n      border-radius: 999px;\n      padding: 6px 10px;\n      font-size: 12px;\n      color: var(--navy);\n      background: rgba(255,255,255,0.65);\n      white-space: nowrap;\n      width: fit-content;\n    }\n    .dot{ width: 9px; height: 9px; border-radius: 999px; background: var(--blue); }\n\n    /* NEW: tiny dot for band meaning line */\n    .mini-dot{\n      display:inline-block;\n      width: 8px;\n      height: 8px;\n      border-radius: 999px;\n      margin-right: 8px;\n      vertical-align: middle;\n    }\n\n    /* 2-column pillar breakdown grid */\n    .pb-grid{\n      margin-top: 12px;\n      display:grid;\n      grid-template-columns: 1fr 1fr;\n      gap: 10px 14px;\n    }\n    .pb-item{\n      border: 1px solid rgba(25,48,80,0.10);\n      background: rgba(255,255,255,0.65);\n      border-radius: 14px;\n      padding: 10px 10px;\n      display:flex;\n      justify-content:space-between;\n      align-items:flex-start;\n      gap: 10px;\n    }\n    .pb-left{ min-width: 0; }\n    .pb-title{\n      font-weight: 900;\n      font-size: 12.6px;\n      line-height: 1.15;\n      margin: 0;\n    }\n    .pb-meaning{\n      margin-top: 4px;\n      font-size: 11.7px;\n      line-height: 1.35;\n      color: rgba(25,48,80,0.68);\n    }\n    .pb-right{\n      white-space: nowrap;\n      text-align:right;\n      padding-top: 2px;\n    }\n    .pb-score{\n      font-weight: 900;\n      font-size: 14px;\n      color: var(--navy);\n    }\n    .pb-den{\n      font-size: 11px;\n      color: rgba(25,48,80,0.55);\n      margin-left: 2px;\n    }\n\n    /* Page 2 */\n\n    .qual-grid{\n      margin-top: 16px;\n      display:grid;\n      grid-template-columns: 1fr;\n      gap: 12px;\n    }\n    .qual{\n      border: 1px solid var(--line);\n      border-radius: 16px;\n      background: rgba(255,255,255,0.75);\n      padding: 14px;\n      box-shadow: var(--shadow);\n    }\n    .qual-head{\n      display:flex;\n      justify-content:space-between;\n      gap: 10px;\n      align-items:flex-start;\n      margin-bottom: 10px;\n    }\n    .qual h3{\n      margin: 0;\n      font-size: 13px;\n      font-weight: 900;\n      color: var(--navy);\n    }\n    .qual .body{\n      color: rgba(25,48,80,0.82);\n      font-size: 12.6px;\n      line-height: 1.65;\n      margin: 0;\n      white-space: pre-wrap;\n    }\n    /* Prevent awkward PDF splits */\n      .qual,\n      .pb-item {\n      page-break-inside: avoid;\n      break-inside: avoid;\n    }\n    .card {\n      page-break-inside: auto;\n      break-inside: auto;\n    }\n    .header{\n      page-break-after: avoid;\n      break-after: avoid;\n    }\n\n/* Page margins */\n@page { margin: 22px; }\n\n    @page { margin: 28px; }\n  </style>\n</head>\n\n<body>\n  <div class=\"page\">\n\n    <!-- PAGE 1 -->\n    <div class=\"header\">\n      <div class=\"header-top\">\n        <div>\n          <div class=\"brand\">HumTech.ai</div>\n          <div class=\"title\">AI & Operations Maturity Scorecard</div>\n          <div class=\"subtitle\">A diagnostic snapshot of revenue leakage, operational drag, and readiness.</div>\n        </div>\n        <div class=\"meta\">\n          <div><strong>Company:</strong> ${company}</div>\n          <div><strong>Email:</strong> ${email}</div>\n          <div><strong>Submitted:</strong> ${submitted}</div>\n        </div>\n      </div>\n      <div class=\"accent-line\"></div>\n    </div>\n\n    <div class=\"card\">\n      <div class=\"section-title\">Your Operating Shape</div>\n      <div class=\"muted\">\n        This radar chart shows performance across the five pillars that drive revenue capture and operational efficiency.\n        Dips often indicate constraint points.\n      </div>\n\n      <div class=\"radar-wrap\">\n        ${radarUrl ? `<img class=\"radar\" src=\"${radarUrl}\" alt=\"HumTech radar chart\" />` : `<div class=\"muted\">Radar chart unavailable.</div>`}\n      </div>\n\n      <div class=\"overall-panel\">\n        <div class=\"section-title\">Overall</div>\n        <div class=\"muted\">Weighted operating maturity</div>\n\n        <div class=\"overall-top\">\n          <div>\n            <span class=\"big-num\" style=\"color:${overallBandColor.color}\">\n              ${typeof overallScore === \"number\" ? overallScore.toFixed(1) : overallScore}\n            </span><span class=\"den\">/ 10</span>\n            \n          </div>\n          <div class=\"pill\">\n            <span class=\"dot\" style=\"background:${overallBandColor};\"></span>\n            <span>${overallBand}</span>\n          </div>\n        </div>\n\n        <div class=\"section-title\" style=\"margin-top:14px;\">Pillar Breakdown</div>\n        <div class=\"pb-grid\">\n          ${pillarPanelItemsHtml}\n        </div>\n      </div>\n    </div>\n\n    <!-- PAGE 2 -->\n\n    <div class=\"card\">\n      <div class=\"section-title\">What this means</div>\n      <div class=\"muted\">These summaries translate each pillar score into practical commercial impact.</div>\n\n      <div class=\"qual-grid\">\n        ${pillarCardsHtml}\n      </div>\n    </div>\n\n  </div>\n</body>\n</html>`;\n\nreturn [{ json: { source: html } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        336
+      ],
+      "id": "8d01012c-1abc-4b8c-84a4-7ede97702cca",
+      "name": "Build PDF HTML"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pdfshift.io/v3/convert/pdf",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"source\": {{ JSON.stringify($json.source) }},\n  \"landscape\": false,\n  \"use_print\": false\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1248,
+        416
+      ],
+      "id": "ece0b50a-85a6-4b5b-881d-af4268805955",
+      "name": "PDFShift",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "mkD2t64uvkNhhUCe",
+          "name": "pdfshift"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * HumTech Score Assessment \u2013 FINAL LOCKED VERSION\n *\n * Inputs:\n *   $json.rawAnswers -> { qid: \"A\" | \"B\" | \"C\" | \"D\" | \"E\" | \"F\" }\n *\n * Outputs:\n *   scoring.radar    -> 5 pillars (0\u201310)\n *   scoring.pillars  -> same values\n *   scoring.overall  -> score10, percent, maturityBand\n *   scoring.informative -> Q12\u2013Q15 (unscored)\n */\n\n// ---------------------------\n// Inputs\n// ---------------------------\nconst raw = $json.rawAnswers || {};\n\n// ---------------------------\n// 1) Question scoring (Q1\u2013Q11 only, 0\u20135)\n// ---------------------------\nconst SCORE_0_TO_5 = {\n  \"q1-engagement\":           { A: 5, B: 4, C: 2, D: 3, E: 0 },\n  \"q2-response-time\":        { A: 5, B: 4, C: 3, D: 2, E: 0 },\n  \"q3-availability\":         { A: 5, B: 0, C: 0, D: 0, E: 0 },\n  \"q4-show-rate\":            { A: 5, B: 4, C: 3, D: 2, E: 0 },\n\n  // UPDATED for new buckets (A\u2013F)\n  // A: 90\u2013100% (5)\n  // B: 80\u201390%  (4)\n  // C: 70\u201380%  (4)\n  // D: 60\u201370%  (3)\n  // E: 50% or less (2)\n  // F: I don\u2019t know / we don\u2019t track (0)\n  \"q5-transaction-rate\":     { A: 5, B: 4, C: 4, D: 3, E: 2, F: 0 },\n\n  // UPDATED to match same buckets as Q5\n  \"q6-primary-role\":         { A: 5, B: 4, C: 4, D: 3, E: 2, F: 0 },\n\n  \"q7-follow-up-time\":       { A: 5, B: 4, C: 3, D: 2, E: 0 },\n  \"q8-repetitive-tasks\":      { A: 5, B: 4, C: 3, D: 2, E: 0 },\n  \"q9-kpi-tracking\":          { A: 5, B: 3, C: 0, D: 0, E: 0 },\n\n  // Q10 now has a 4th answer in the FORM (D).\n  // Leaving scoring as 0 for D/E keeps scoring logic stable.\n  \"q10-documents\":            { A: 5, B: 4, C: 0, D: 0, E: 0 },\n\n  \"q11-overall-automation\":   { A: 5, B: 3, C: 1, D: 0, E: 0 }\n};\n\n// ---------------------------\n// 2) Final pillars (radar axes)\n// ---------------------------\nconst PILLARS = [\n  \"leadEngagementSpeed\",\n  \"appointmentReliabilityConversion\",\n  \"operationalFocusTimeEfficiency\",\n  \"systemsAutomationMaturity\",\n  \"revenueProtectionLeakageControl\"\n];\n\n// ---------------------------\n// 3) Question \u2192 pillar weights (LOCKED)\n// ---------------------------\nconst QUESTION_WEIGHTS = {\n  \"q1-engagement\": {\n    leadEngagementSpeed: 0.6,\n    revenueProtectionLeakageControl: 0.4\n  },\n  \"q2-response-time\": {\n    leadEngagementSpeed: 0.7,\n    revenueProtectionLeakageControl: 0.3\n  },\n  \"q3-availability\": {\n    leadEngagementSpeed: 0.4,\n    systemsAutomationMaturity: 0.6\n  },\n  \"q4-show-rate\": {\n    appointmentReliabilityConversion: 0.6,\n    revenueProtectionLeakageControl: 0.4\n  },\n  \"q5-transaction-rate\": {\n    appointmentReliabilityConversion: 0.5,\n    revenueProtectionLeakageControl: 0.5\n  },\n  \"q6-primary-role\": {\n    operationalFocusTimeEfficiency: 1.0\n  },\n  \"q7-follow-up-time\": {\n    operationalFocusTimeEfficiency: 0.6,\n    revenueProtectionLeakageControl: 0.4\n  },\n  \"q8-repetitive-tasks\": {\n    operationalFocusTimeEfficiency: 0.7,\n    systemsAutomationMaturity: 0.3\n  },\n  \"q9-kpi-tracking\": {\n    systemsAutomationMaturity: 0.7,\n    appointmentReliabilityConversion: 0.3\n  },\n  \"q10-documents\": {\n    systemsAutomationMaturity: 0.7,\n    operationalFocusTimeEfficiency: 0.3\n  },\n  \"q11-overall-automation\": {\n    systemsAutomationMaturity: 0.6,\n    revenueProtectionLeakageControl: 0.4\n  }\n};\n\n// ---------------------------\n// Helpers\n// ---------------------------\nfunction scoreQuestion0to5(qid, answerId) {\n  const map = SCORE_0_TO_5[qid];\n  if (!map) return 0;\n  const s = map[answerId];\n  return typeof s === \"number\" ? s : 0;\n}\n\nfunction to0to10(score0to5) {\n  return (score0to5 / 5) * 10;\n}\n\nfunction clamp0to10(v) {\n  return Math.max(0, Math.min(10, v));\n}\n\n// ---------------------------\n// 4) Compute pillar scores\n// ---------------------------\nconst pillarTotals = Object.fromEntries(PILLARS.map(p => [p, 0]));\nconst pillarWeights = Object.fromEntries(PILLARS.map(p => [p, 0]));\n\nconst expectedQids = Object.keys(QUESTION_WEIGHTS);\nconst missingQuestions = [];\n\nfor (const qid of expectedQids) {\n  const ans = raw[qid];\n  if (!ans) missingQuestions.push(qid);\n\n  const s0to5 = scoreQuestion0to5(qid, ans);\n  const s0to10 = to0to10(s0to5);\n\n  const weights = QUESTION_WEIGHTS[qid];\n  for (const [pillar, w] of Object.entries(weights)) {\n    pillarTotals[pillar] += s0to10 * w;\n    pillarWeights[pillar] += w;\n  }\n}\n\nconst pillars = {};\nfor (const pillar of PILLARS) {\n  const denom = pillarWeights[pillar] || 0;\n  const rawScore = denom ? pillarTotals[pillar] / denom : 0;\n  pillars[pillar] = clamp0to10(Math.round(rawScore * 10) / 10);\n}\n\n// Radar = same 5 pillars\nconst radar = { ...pillars };\n\n// ---------------------------\n// 5) Overall score (average of pillars, weighted by pillar importance)\n// ---------------------------\nconst PILLAR_IMPORTANCE = {\n  leadEngagementSpeed: 0.22,\n  appointmentReliabilityConversion: 0.22,\n  operationalFocusTimeEfficiency: 0.22,\n  systemsAutomationMaturity: 0.22,\n  revenueProtectionLeakageControl: 0.12\n};\n\nlet overallNumerator = 0;\nlet overallDenom = 0;\nfor (const p of PILLARS) {\n  const w = PILLAR_IMPORTANCE[p] || 0;\n  overallNumerator += (pillars[p] || 0) * w;\n  overallDenom += w;\n}\nconst overallScore10 = overallDenom ? overallNumerator / overallDenom : 0;\nconst overallScore10Rounded = clamp0to10(Math.round(overallScore10 * 10) / 10);\nconst overallPercent = Math.round((overallScore10Rounded / 10) * 100);\n\n// Bands (0\u201310)\nfunction bandFor(score10) {\n  if (score10 < 5.0) return \"Constrained\";\n  if (score10 < 7.0) return \"Emerging\";\n  if (score10 < 9.0) return \"Developing/Advanced\";\n  return \"Optimised\";\n}\nconst maturityBand = bandFor(overallScore10Rounded);\n\n// ---------------------------\n// 6) Debug/QA (optional)\n// ---------------------------\nconst qa = {\n  missingQuestions,\n  expectedQids\n};\n\n// ---------------------------\n// 7) Informative-only answers (Q12\u2013Q15)\n// ---------------------------\nconst informative = {\n  q12DesiredOutcome: raw[\"q12-desired-outcome\"] || null,\n\n  // UPDATED: support multi-select (array of answerIds)\n  q13Barriers: (() => {\n    const v = raw[\"q13-barriers\"];\n    if (Array.isArray(v)) return v;\n    if (typeof v === \"string\" && v) return [v];\n    return null;\n  })(),\n\n  q14SolutionType: raw[\"q14-solution-type\"] || null,\n  q15Notes: raw[\"q15-notes\"] || null\n};\n\n// ---------------------------\n// 8) Return\n// ---------------------------\nreturn [\n  {\n    json: {\n      ...$json,\n      scoring: {\n        radar,\n        pillars,\n        overall: {\n          score10: overallScore10Rounded,\n          percent: overallPercent,\n          maturityBand\n        },\n        informative,\n        qa\n      }\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        336
+      ],
+      "id": "1c585e36-3a1b-4c2d-919e-9bc757d65267",
+      "name": "Question Scoring / pillar weight"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Banding + Qualitative Copy Mapping (One Node) \u2014 with Traffic Light Colours\n *\n * Expects:\n *   $json.scoring.pillars = {\n *     leadEngagementSpeed: 0-10,\n *     appointmentReliabilityConversion: 0-10,\n *     operationalFocusTimeEfficiency: 0-10,\n *     systemsAutomationMaturity: 0-10,\n *     revenueProtectionLeakageControl: 0-10\n *   }\n *\n * Produces:\n *   $json.banding = { bandsMeta, overallBand }\n *   $json.pillarInsights = {\n *     [pillarKey]: { score, bandKey, bandLabel, bandMeaning, title, body, bandRange, bandColor }\n *   }\n */\n\nconst pillars = $json?.scoring?.pillars || {};\nconst overall10 = $json?.scoring?.overall?.score10 ?? null;\n\n// ---------------------------\n// 1) Band definitions (LOCKED) + Traffic Light Colours\n// ---------------------------\nconst BAND_META = {\n  constrained: {\n    label: \"Constrained\",\n    range: \"0.0\u20134.9\",\n    meaning: \"Structural blockers are actively limiting revenue, efficiency, or scale.\",\n    // traffic light\n    color: \"#C62828\" // red\n  },\n  emerging: {\n    label: \"Emerging\",\n    range: \"5.0\u20136.9\",\n    meaning: \"Core foundations exist, but execution is inconsistent or fragile.\",\n    // traffic light\n    color: \"#F9A825\" // amber\n  },\n  advanced: {\n    label: \"Advanced\",\n    range: \"7.0\u20138.9\",\n    meaning: \"Strong operating shape with clear leverage points.\",\n    // traffic light\n    color: \"#2E7D32\" // green\n  },\n  optimised: {\n    label: \"Optimised\",\n    range: \"9.0\u201310.0\",\n    meaning: \"Systemic advantage.\",\n    // traffic light (darker green for top band)\n    color: \"#1B5E20\" // dark green\n  }\n};\n\nfunction bandScore(score) {\n  const s = typeof score === \"number\" ? score : 0;\n  if (s >= 9.0) return \"optimised\";\n  if (s >= 7.0) return \"advanced\";\n  if (s >= 5.0) return \"emerging\";\n  return \"constrained\";\n}\n\n// ---------------------------\n// 2) Display labels for pillars (for HTML)\n// ---------------------------\nconst PILLAR_LABELS = {\n  leadEngagementSpeed: \"Lead Engagement & Speed\",\n  appointmentReliabilityConversion: \"Appointment Reliability & Conversion\",\n  operationalFocusTimeEfficiency: \"Operational Focus & Time Efficiency\",\n  systemsAutomationMaturity: \"Systems & Automation Maturity\",\n  revenueProtectionLeakageControl: \"Revenue Protection & Leakage Control\"\n};\n\n// ---------------------------\n// 3) Qualitative copy mapping (PLACEHOLDERS)\n// Replace these strings with Chris's final copy.\n// Keep it minimal: title + body.\n// ---------------------------\nconst QUAL_COPY = {\n  leadEngagementSpeed: {\n    constrained: {\n      title: \"Slow engagement is costing you live demand\",\n      body: \"New enquiries are not being engaged quickly enough to capture intent while it\u2019s highest. Delays between enquiry and first interaction increase drop-off, reduce trust, and give competitors time to intercept demand. In practice, this creates revenue leakage before qualification even begins.\"\n    },\n    emerging: {\n      title: \"Engagement exists, but speed varies\",\n      body: \"Some automated or semi-automated engagement is in place, but response speed is inconsistent. Leads may be contacted promptly at certain times, but gaps still exist. This creates uneven performance and prevents the business from fully capitalising on inbound demand.\"\n    },\n    advanced: {\n      title: \"Fast engagement supports stronger outcomes\",\n      body: \"Most new leads are engaged quickly, helping preserve momentum and improve early-stage conversion. Speed to lead is no longer a major constraint, although there may still be edge cases where demand is missed outside core hours or peak volume.\"\n    },\n    optimised: {\n      title: \"Speed to lead is a competitive advantage\",\n      body: \"New enquiries are engaged almost immediately, regardless of time or channel. This protects revenue at the point of entry and materially improves conversion by meeting prospects while intent is highest.\"\n    }\n  },\n\n  appointmentReliabilityConversion: {\n    constrained: {\n      title: \"High appointment drop-off is draining capacity\",\n      body: \"A large proportion of booked appointments fail to attend or convert into meaningful conversations. This points to issues with qualification, expectation-setting, or follow-up, resulting in wasted sales effort and unpredictable outcomes.\"\n    },\n    emerging: {\n      title: \"Conversion works, but is effort-dependent\",\n      body: \"Appointments are often attended, but reliability depends heavily on manual effort or individual performance. This limits scalability and makes conversion performance difficult to forecast consistently.\"\n    },\n    advanced: {\n      title: \"Appointments convert reliably\",\n      body: \"Most booked appointments are attended and progress as expected. Qualification and engagement are effective enough to support consistent conversion, reducing wasted time and improving sales efficiency.\"\n    },\n    optimised: {\n      title: \"Conversion is predictable and controlled\",\n      body: \"Appointment attendance and conversion are highly reliable, driven by systems rather than manual chasing. This creates predictable revenue flow and removes a major source of operational waste.\"\n    }\n  },\n\n  operationalFocusTimeEfficiency: {\n    constrained: {\n      title: \"Too much time is spent on non-core work\",\n      body: \"A significant portion of team time is absorbed by repetitive admin, follow-ups, and manual handling. This reduces focus on revenue-generating activity and increases operational drag as the business grows.\"\n    },\n    emerging: {\n      title: \"Some efficiency gains, but drag remains\",\n      body: \"Certain tasks have been streamlined, but teams are still pulled away from their primary roles. Time leakage persists, limiting capacity and slowing overall execution.\"\n    },\n    advanced: {\n      title: \"Teams are mostly focused on high-value work\",\n      body: \"Most low-value or repetitive tasks have been reduced or automated. Teams spend the majority of their time on core responsibilities, supporting healthier workloads and more efficient growth.\"\n    },\n    optimised: {\n      title: \"Time is deliberately protected\",\n      body: \"Operational effort is tightly aligned to value creation. Automation and process design minimise distraction, allowing teams to focus almost entirely on high-impact work without increasing headcount.\"\n    }\n  },\n\n  systemsAutomationMaturity: {\n    constrained: {\n      title: \"Manual processes create risk and friction\",\n      body: \"Core workflows rely on manual handling or disconnected tools. This increases error risk, slows execution, and limits visibility across performance, making operations harder to manage as volume increases.\"\n    },\n    emerging: {\n      title: \"Automation exists, but isn\u2019t joined up\",\n      body: \"Some systems and tools are in place, but they don\u2019t work together cleanly. Manual intervention is still required to keep processes moving, reducing the overall impact of automation.\"\n    },\n    advanced: {\n      title: \"Systems support day-to-day operations\",\n      body: \"Key workflows are automated and reasonably well integrated. Data, documents, and handoffs flow through defined systems, improving consistency and operational visibility.\"\n    },\n    optimised: {\n      title: \"Automation underpins how the business runs\",\n      body: \"Systems are intentionally designed and fully integrated. Automation reduces risk, improves speed, and provides clear oversight across operations, forming a strong foundation for scale.\"\n    }\n  },\n\n  revenueProtectionLeakageControl: {\n    constrained: {\n      title: \"Revenue loss is largely unmanaged\",\n      body: \"Opportunities are being lost across the funnel without clear visibility into where or why. This makes revenue unpredictable and limits the ability to address the underlying causes of leakage.\"\n    },\n    emerging: {\n      title: \"Leakage is visible, but not fully controlled\",\n      body: \"Some drop-off points are understood, but controls are inconsistent. Revenue protection relies on manual monitoring rather than systemic safeguards, leaving avoidable value on the table.\"\n    },\n    advanced: {\n      title: \"Most leakage is actively managed\",\n      body: \"The business has good visibility into where opportunities are lost and takes steps to reduce avoidable drop-off. This improves conversion efficiency and protects revenue without increasing acquisition spend.\"\n    },\n    optimised: {\n      title: \"Revenue is structurally protected\",\n      body: \"Systems and processes are designed to minimise leakage at each stage of the journey. Opportunities are captured, qualified, and progressed consistently, creating more predictable and resilient revenue outcomes.\"\n    }\n  }\n};\n\n// ---------------------------\n// 4) Build pillarInsights output\n// ---------------------------\nconst pillarInsights = {};\n\nfor (const [pillarKey, score] of Object.entries(pillars)) {\n  if (!PILLAR_LABELS[pillarKey]) continue;\n\n  const bandKey = bandScore(score);\n  const meta = BAND_META[bandKey];\n\n  const copyBucket = QUAL_COPY[pillarKey] || {};\n  const copy = copyBucket[bandKey] || { title: \"\", body: \"\" };\n\n  pillarInsights[pillarKey] = {\n    pillarKey,\n    pillarLabel: PILLAR_LABELS[pillarKey],\n    score: typeof score === \"number\" ? Math.round(score * 10) / 10 : 0,\n\n    bandKey,\n    bandLabel: meta.label,\n    bandMeaning: meta.meaning,\n    bandRange: meta.range,\n\n    // traffic light\n    bandColor: meta.color,\n\n    title: copy.title,\n    body: copy.body\n  };\n}\n\n// ---------------------------\n// 5) Overall band (based on overall score10 if present)\n// ---------------------------\nlet overallBand = null;\nif (typeof overall10 === \"number\") {\n  const k = bandScore(overall10);\n  overallBand = {\n    score10: Math.round(overall10 * 10) / 10,\n    bandKey: k,\n    bandLabel: BAND_META[k].label,\n    bandMeaning: BAND_META[k].meaning,\n    bandRange: BAND_META[k].range,\n\n    // traffic light\n    bandColor: BAND_META[k].color\n  };\n}\n\n// ---------------------------\n// 6) Return enriched JSON\n// ---------------------------\nreturn [\n  {\n    json: {\n      ...$json,\n      banding: {\n        bandsMeta: BAND_META,\n        overallBand\n      },\n      pillarInsights\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        336
+      ],
+      "id": "c6c4732b-282b-4e7b-9555-ceae9d2587cc",
+      "name": "banding / qual mapping"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.source }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1056,
+        544
+      ],
+      "id": "dff8ce59-8a5f-4ca1-8e08-4b795ba79ed7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/hooks/V7m7dlgTERFjn0t4soSv/webhook-trigger/0086d659-e529-4cc4-8734-23af62880b13",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{ $('Edit Fields').item.json.email }}\",\n  \"companyName\": \"{{ $('Edit Fields').item.json.company }}\",\n  \"name\": \"{{ $('Edit Fields').item.json.name }}\",\n  \"job_title\": \"{{ $('Edit Fields').item.json.job_title }}\",\n  \"mobile\": \"{{ $('Edit Fields').item.json.mobile }}\",\n  \"customFields\": {\n    \"humtech_assessment_version\": \"v2\",\n    \"humtech_submitted_at\": \"{{ $('Edit Fields').item.json.submitted_at }}\",\n    \"humtech_overall_score\": \"{{ $('Question Scoring / pillar weight').item.json.scoring.overall.score10 }}\",\n    \"humtech_overall_band\": \"{{ $('Question Scoring / pillar weight').item.json.scoring.overall.maturityBand }}\",\n    \"humtech_lead_engagement_score\": \"{{ $('Question Scoring / pillar weight').item.json.scoring.pillars.leadEngagementSpeed }}\",\n    \"humtech_appointment_reliability_score\": \"{{ $('Question Scoring / pillar weight').item.json.scoring.pillars.appointmentReliabilityConversion }}\",\n    \"humtech_operational_focus_score\": \"{{ $('Question Scoring / pillar weight').item.json.scoring.pillars.operationalFocusTimeEfficiency }}\",\n    \"humtech_systems_maturity_score\": \"{{ $('Question Scoring / pillar weight').item.json.scoring.pillars.systemsAutomationMaturity }}\",\n    \"humtech_revenue_protection_score\": \"{{ $('Question Scoring / pillar weight').item.json.scoring.pillars.revenueProtectionLeakageControl }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1040,
+        800
+      ],
+      "id": "80ec6222-a29a-4f7a-9766-b160d6b85c20",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Resolve n8n expressions FIRST\nconst to = $('Edit Fields').first().json.body.contact.email;\nconst firstName = $('Edit Fields').first().json.body.contact.name || \"there\";\n\nconst maturityBand =\n  $('banding / qual mapping').first().json.scoring.overall.maturityBand;\n\nconst percent =\n  $('banding / qual mapping').first().json.scoring.overall.percent;\n\nconst pdf = (($json.pdf_base64 || \"\") + \"\")\n  .replace(/^data:application\\/pdf;base64,/, \"\");\n\nconst body = {\n  from: \"HumTech.ai <hello@humtech.ai>\",\n  to,\n  cc: [\"louise.knight@humtech.ai\"],\n  subject: \"Your HumTech AI Assessment\",\n  html: `\n    <p>Hi ${firstName},</p>\n\n    <p>Here\u2019s a copy of your <strong>HumTech AI Assessment</strong>.</p>\n\n    <p><strong>The brutal truth?</strong> Most businesses scoring under 7/10 are bleeding \u00a350k+ annually on manual processes which competitors are automating right now.</p>\n\n    <p>Your assessment flagged the following as immediate red flags:</p>\n    <ul>\n      <li>${maturityBand} (${percent}%)</li>\n    </ul>\n\n    <p>When was the last time you tracked exactly how many leads drop off between outreach and sales?</p>\n\n    <p>What if I told you AI can recover up to <strong>40%</strong> of those \u201clost\u201d leads automatically?</p>\n\n    <p>Every \u00a31k wasted on inefficient processes is \u00a31k your competitors reinvest in ads.</p>\n\n    <p><strong>Your next step:</strong><br>\n    Book your free consultation call (this is not a sales call \u2013 no services can be advised until we have an in-depth understanding of your business needs).</p>\n\n    <p>Simply reply to <strong>Ariyah</strong>, our friendly AI employee, via SMS. She\u2019ll check our calendar and book you in at a mutually convenient time.</p>\n\n    <p><strong>OR</strong> reply to this email with at least <strong>3 dates/times</strong>* when you have at least 30 minutes available.</p>\n\n    <p><em>*We cannot guarantee that a consultant will be able to match your specific times, as demand for AI systems is currently very high.</em></p>\n\n    <p>\n      Chris Silver<br>\n      Strategic Director<br>\n      HumTech.ai<br>\n      <a href=\"mailto:hello@humtech.ai\">hello@humtech.ai</a>\n    </p>\n\n    <p><strong>P.S.</strong> Your competitors are rolling out AI systems while you think.</p>\n  `,\n  attachments: [\n    {\n      filename: \"HumTech-Assessment-Report.pdf\",\n      content: pdf,\n      content_type: \"application/pdf\",\n    },\n  ],\n};\n\nreturn [{ json: { resend_raw: JSON.stringify(body) } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        448
+      ],
+      "id": "8de44be1-07f6-4086-995b-5737766c8172",
+      "name": "email"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Question Scoring / pillar weight",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Radar chart URL": {
+      "main": [
+        [
+          {
+            "node": "Build PDF HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build PDF HTML": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFShift": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question Scoring / pillar weight": {
+      "main": [
+        [
+          {
+            "node": "banding / qual mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "banding / qual mapping": {
+      "main": [
+        [
+          {
+            "node": "Radar chart URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "PDFShift",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "email": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/London",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "151b0889-620a-4c9f-8b61-02780385bbd9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bcb88b0bd89d1e36de7cc167708a0dcf12c21145fd76ae3fe641417a2b5f969e"
+  },
+  "id": "UPceXr0EYkOlRsjz",
+  "tags": []
+}
