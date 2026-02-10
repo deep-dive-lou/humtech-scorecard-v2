@@ -117,7 +117,7 @@
           "parameters": [
             {
               "name": "authorization",
-              "value": "Bearer re_GZUNd33M_LpM8rXnSMsd9USzrREMMG4Zg"
+              "value": "Bearer {{RESEND_API_KEY}}"
             },
             {
               "name": "Content-Type",
