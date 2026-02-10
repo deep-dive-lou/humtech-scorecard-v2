@@ -76,10 +76,10 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q6_issue_detection",
       pillar: "systems_automation_maturity",
-      text: "How often do issues show up in your business later than you\u2019d like? (e.g. missed steps, delays, errors, unhappy clients)",
+      text: "How often do issues show up in your business later than you'd like? (e.g. missed steps, delays, errors, unhappy clients)",
       isScored: true,
       options: [
-        { id: "regularly", label: "Regularly - we usually find out when something\u2019s already gone wrong", answerId: "A" },
+        { id: "regularly", label: "Regularly - we usually find out when something's already gone wrong", answerId: "A" },
         { id: "occasionally", label: "Occasionally - issues surface after some damage is done", answerId: "B" },
         { id: "rarely", label: "Rarely - we usually catch problems early", answerId: "C" },
         { id: "almost-never", label: "Almost never - issues are flagged automatically before impact", answerId: "D" },
@@ -88,13 +88,13 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q7_metric_tracking",
       pillar: "operational_focus_time_efficiency",
-      text: "Do you follow \u201cIf you can\u2019t measure it, you can\u2019t manage it\u201d\u2014tracking key metrics like Lead Velocity Rate, Pipeline Coverage Ratio, Sales Cycle Length, DNA + engagement, LTV, CRO, ROAS, and CAC?",
+      text: "Do you follow \"If you can't measure it, you can't manage it\"\u2014tracking key metrics like Lead Velocity Rate, Pipeline Coverage Ratio, Sales Cycle Length, DNA + engagement, LTV, CRO, ROAS, and CAC?",
       isScored: true,
       options: [
-        { id: "100", label: "100% - there is not a metric with an impact on revenue or time that we don\u2019t measure.", answerId: "A" },
-        { id: "70", label: "70% - mostly, although there may be a small number of key metrics that we don\u2019t have clear sight of.", answerId: "B" },
+        { id: "100", label: "100% - there is not a metric with an impact on revenue or time that we don't measure.", answerId: "A" },
+        { id: "70", label: "70% - mostly, although there may be a small number of key metrics that we don't have clear sight of.", answerId: "B" },
         { id: "50", label: "50% - we have sight of roughly half of what we should.", answerId: "C" },
-        { id: "sub-50", label: ">50% - we don\u2019t know what we don\u2019t know, and should be measuring more metrics which impact our service and revenue.", answerId: "D" },
+        { id: "sub-50", label: ">50% - we don't know what we don't know, and should be measuring more metrics which impact our service and revenue.", answerId: "D" },
       ],
     },
     {
@@ -120,7 +120,7 @@ export const assessmentConfig: AssessmentConfig = {
         { id: "60m", label: "60 minutes or less per week", answerId: "B" },
         { id: "1-5h", label: "1\u20135 hours per week", answerId: "C" },
         { id: "5h-plus", label: "More than 5 hours per week", answerId: "D" },
-        { id: "unknown", label: "I don't know", answerId: "E" },
+        { id: "unknown", label: "I don't know / we don't track this", answerId: "E" },
       ],
     },
     {
@@ -151,7 +151,7 @@ export const assessmentConfig: AssessmentConfig = {
       text: "What best describes your current situation? (not all aspects may be relevant, just pick the best fit).",
       isScored: true,
       options: [
-        { id: "complete", label: "Complete automation: New clients experience an immediate 2 way triage appointment scheduling, over 80% of appointments are attended with pre-qualified leads and most clients transact. Our team don\u2019t perform repetitive admin tasks and we don\u2019t waste time or take risks requesting/receiving documents via email. Our sales and marketing including CRO are optimised and our KPI/target data is automated and visible in a simple dashboard", answerId: "A" },
+        { id: "complete", label: "Complete automation: New clients experience an immediate 2 way triage appointment scheduling, over 80% of appointments are attended with pre-qualified leads and most clients transact. Our team don't perform repetitive admin tasks and we don't waste time or take risks requesting/receiving documents via email. Our sales and marketing including CRO are optimised and our KPI/target data is automated and visible in a simple dashboard", answerId: "A" },
         { id: "partial", label: "Part automation: New clients receive some automated outreach (email/SMS/PDF), appointments are fairly well attended with good to reasonable sales outcomes. Our team perform some repetitive tasks and admin. Our sales and marketing including CRO are reasonable although could be better. KPI/target tracking works, but it takes more time than we would like", answerId: "B" },
         { id: "none", label: "Zero automation: New clients wait for manual outreach or simple automated message. There is no instantaneous 2 way conversation to build trust and engage the client. Our team perform repetitive tasks and time is spent producing emails manually including document requests/receipt. Our sales, KPI tracking and/or marketing may need some work", answerId: "C" },
         { id: "other", label: "Other, please specify", answerId: "D", hasTextInput: true },
@@ -161,13 +161,13 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q13_desired_outcome",
       pillar: "informative",
-      text: "What best describes the outcome you\u2019re looking for?",
+      text: "What best describes the outcome you're looking for?",
       isScored: false,
       options: [
         { id: "time-saving", label: "Time saving (Deflection ROI). Our team waste a lot of time performing repetitive tasks (e.g. data entry, client management, document requests, chasing).", answerId: "A" },
-        { id: "revenue", label: "Revenue increase. We\u2019d like to increase revenue without additional marketing spend through targeted AI efficiency upgrades", answerId: "B" },
+        { id: "revenue", label: "Revenue increase. We'd like to increase revenue without additional marketing spend through targeted AI efficiency upgrades", answerId: "B" },
         { id: "both", label: "A combination of time saving and revenue increase", answerId: "C" },
-        { id: "none", label: "None of the above, we\u2019re fine as we are.", answerId: "D" },
+        { id: "none", label: "None of the above, we're fine as we are.", answerId: "D" },
         { id: "other", label: "Other, please specify", answerId: "E", hasTextInput: true },
       ],
     },
@@ -177,10 +177,10 @@ export const assessmentConfig: AssessmentConfig = {
       text: "What has prevented you from implementing comprehensive AI strategy previously?",
       isScored: false,
       options: [
-        { id: "tech-failed", label: "We\u2019ve tried other platforms/apps and the technology did not meet our standards or solve a problem or evidence sufficient ROI/use case", answerId: "A" },
-        { id: "expensive", label: "We\u2019ve found options are too expensive", answerId: "B" },
+        { id: "tech-failed", label: "We've tried other platforms/apps and the technology did not meet our standards or solve a problem or evidence sufficient ROI/use case", answerId: "A" },
+        { id: "expensive", label: "We've found options are too expensive", answerId: "B" },
         { id: "confusing", label: "We find AI technology confusing and lack any technical understanding", answerId: "C" },
-        { id: "no-time", label: "We haven\u2019t had time to look into it in enough depth", answerId: "D" },
+        { id: "no-time", label: "We haven't had time to look into it in enough depth", answerId: "D" },
       ],
     },
     {
@@ -189,11 +189,11 @@ export const assessmentConfig: AssessmentConfig = {
       text: "Which type of solution would best suit your needs?",
       isScored: false,
       options: [
-        { id: "full-service", label: "I want to be at the cutting edge but don\u2019t want to pay big AI salaries. A team of AI directors to handle everything including in-depth system/processes review, proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements.", answerId: "A" },
-        { id: "implementation-only", label: "I\u2019m keen to consider AI implementation(s) only, such as your 24/7 conversational triage system, but I do not require ongoing support via your fractioned director service", answerId: "B" },
-        { id: "directors-only", label: "I\u2019m happy with our existing systems, but would like to learn more about fractioned AI directors as a standalone service", answerId: "C" },
-        { id: "not-concerned", label: "I\u2019m not currently concerned about the opportunity loss in time, revenue and lost business", answerId: "D" },
-        { id: "other", label: "Other, please specify (e.g. sales training / SOP\u2019s, marketing optimisation / \u201cI just want my business to make more money without spending more on ads\u201d)", answerId: "E", hasTextInput: true },
+        { id: "full-service", label: "I want to be at the cutting edge but don't want to pay big AI salaries. A team of AI directors to handle everything including in-depth system/processes review, proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements.", answerId: "A" },
+        { id: "implementation-only", label: "I'm keen to consider AI implementation(s) only, such as your 24/7 conversational triage system, but I do not require ongoing support via your fractioned director service", answerId: "B" },
+        { id: "directors-only", label: "I'm happy with our existing systems, but would like to learn more about fractioned AI directors as a standalone service", answerId: "C" },
+        { id: "not-concerned", label: "I'm not currently concerned about the opportunity loss in time, revenue and lost business", answerId: "D" },
+        { id: "other", label: "Other, please specify (e.g. sales training / SOP's, marketing optimisation / \"I just want my business to make more money without spending more on ads\")", answerId: "E", hasTextInput: true },
       ],
     },
   ],
