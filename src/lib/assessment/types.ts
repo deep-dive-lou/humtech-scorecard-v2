@@ -1,4 +1,4 @@
-export type Pillar = "operations" | "customer" | "revenue" | "data" | "informative";
+export type Pillar = "lead_engagement_speed" | "appointment_reliability_conversion" | "operational_focus_time_efficiency" | "systems_automation_maturity" | "revenue_protection_leakage" | "informative";
 
 export interface QuestionOption {
   id: string;
@@ -12,8 +12,8 @@ export interface Question {
   pillar: Pillar;
   text: string;
   options: QuestionOption[];
-  isScored?: boolean; // true for q1-q11, false for q12-q14
-  isMultiSelect?: boolean; // true for questions allowing multiple selections (e.g., q13)
+  isScored?: boolean; // true for q1-q12, false for q13-q15
+  isMultiSelect?: boolean; // true for questions allowing multiple selections
 }
 
 export interface AssessmentConfig {
@@ -39,5 +39,5 @@ export interface AssessmentState {
   company?: string;
   mobile?: string; // optional
   title?: string; // optional
-  notes?: string; // q15-notes free text
+  notes?: string; // q16_additional_notes free text
 }

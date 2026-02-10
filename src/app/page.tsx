@@ -6,7 +6,7 @@ import { AssessmentState } from "@/lib/assessment/types";
 
 export default function AssessmentPage() {
   const totalQuestions = assessmentConfig.questions.length;
-  const totalSteps = totalQuestions + 2; // +1 for q15-notes, +1 for email capture
+  const totalSteps = totalQuestions + 2; // +1 for q16_additional_notes, +1 for email capture
 
   const [state, setState] = useState<AssessmentState>({
     answers: {},
@@ -150,7 +150,7 @@ export default function AssessmentPage() {
     const rawAnswers: Record<string, string | string[]> = {};
     assessmentConfig.questions.forEach((question) => {
       if (question.isMultiSelect) {
-        // Handle multi-select questions (e.g., q13-barriers)
+        // Handle multi-select questions
         const selectedOptionIds = state.multiSelectAnswers[question.id] || [];
         const selectedAnswerIds = selectedOptionIds
           .map((optId) => {
@@ -189,7 +189,7 @@ export default function AssessmentPage() {
       rawAnswers,
       answers: formattedAnswers,
       freeText: {
-        "q15-notes": state.notes || "",
+        "q16_additional_notes": state.notes || "",
       },
     };
 
