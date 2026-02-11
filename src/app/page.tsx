@@ -6,7 +6,6 @@ import { AssessmentState } from "@/lib/assessment/types";
 
 export default function AssessmentPage() {
   const NAVY_LIGHT = "#122845";
-  const NAVY_DARK = "#060f1e";
   const totalQuestions = assessmentConfig.questions.length;
   const totalSteps = totalQuestions + 2; // +1 for q16_additional_notes, +1 for email capture
 
@@ -273,8 +272,8 @@ export default function AssessmentPage() {
   // Show thank you page after submission
   if (isSubmitted) {
     return (
-      <main className="py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center">
-        <div className="max-w-2xl w-full mx-auto">
+      <main className="w-full py-4 sm:py-8 px-3 sm:px-4 flex items-center justify-center">
+        <div className="max-w-2xl w-full mx-auto rounded-[24px] p-5 sm:p-7 shadow-lg" style={{ backgroundColor: "#E1E4E9" }}>
           <div className="rounded-lg shadow-md p-6 sm:p-8 text-center" style={{ backgroundColor: '#E1E4E9' }}>
             <div className="mb-6">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#6BB790' }}>
@@ -296,8 +295,8 @@ export default function AssessmentPage() {
   }
 
   return (
-    <main className="w-full py-2 px-3 sm:px-3" style={{ backgroundColor: "#E1E4E9" }}>
-      <div className="w-full">
+    <main className="w-full py-4 sm:py-6 px-3 sm:px-4 flex justify-center">
+      <div className="w-full max-w-4xl rounded-[24px] p-5 sm:p-7 shadow-lg" style={{ backgroundColor: "#E1E4E9" }}>
         {/* Progress Bar */}
         <div className="mb-3 sm:mb-4">
           <div className="flex justify-between text-xs mb-2" style={{ color: NAVY_LIGHT }}>
