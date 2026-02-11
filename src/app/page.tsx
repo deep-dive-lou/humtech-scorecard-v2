@@ -32,10 +32,19 @@ export default function AssessmentPage() {
   useEffect(() => {
     const emitHeight = () => {
       if (window.parent === window) return;
-      const height = Math.max(
+      const mainEl = document.querySelector("main");
+      const mainRectHeight = mainEl
+        ? Math.ceil(mainEl.getBoundingClientRect().height)
+        : 0;
+
+      const docHeight = Math.max(
         document.documentElement.scrollHeight,
         document.body.scrollHeight
       );
+
+      // On mobile, scrollHeight can collapse to viewport height and create extra dead space.
+      // Prefer the real rendered form height when it is available.
+      const height = Math.max(mainRectHeight, docHeight > window.innerHeight ? docHeight : 0);
       window.parent.postMessage(
         { type: "humtech-scorecard-height", height },
         "*"
@@ -46,10 +55,18 @@ export default function AssessmentPage() {
     const observer = new ResizeObserver(emitHeight);
     observer.observe(document.body);
     window.addEventListener("resize", emitHeight);
+    window.addEventListener("load", emitHeight);
+
+    // Re-emit after layout settles (fonts/host transitions can shift height).
+    const t1 = window.setTimeout(emitHeight, 80);
+    const t2 = window.setTimeout(emitHeight, 300);
 
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", emitHeight);
+      window.removeEventListener("load", emitHeight);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
     };
   }, [state.currentStep, isSubmitting, isSubmitted]);
 
