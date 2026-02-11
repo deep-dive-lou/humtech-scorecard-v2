@@ -296,8 +296,8 @@ export default function AssessmentPage() {
   }
 
   return (
-    <main className="py-2 sm:py-3 px-2 sm:px-3 flex justify-center">
-      <div className="max-w-xl w-full mx-auto">
+    <main className="w-full py-2 px-3 sm:px-3" style={{ backgroundColor: "#E1E4E9" }}>
+      <div className="w-full">
         {/* Progress Bar */}
         <div className="mb-3 sm:mb-4">
           <div className="flex justify-between text-xs mb-2" style={{ color: NAVY_LIGHT }}>
