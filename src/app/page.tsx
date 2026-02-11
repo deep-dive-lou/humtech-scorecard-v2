@@ -1,11 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { assessmentConfig } from "@/lib/assessment/config";
 import { AssessmentState } from "@/lib/assessment/types";
 
 export default function AssessmentPage() {
   const NAVY_LIGHT = "#122845";
+  const CARD_BG = "#122845";
+  const SURFACE_BG = "#FBFCFC";
+  const FIELD_BG = "#FBFCFC";
+  const FIELD_BORDER = "#DFE3E9";
+  const BORDER_SOFT = "rgba(255, 255, 255, 0.26)";
+  const TEXT_ON_DARK = "#EAF0F7";
+  const MUTED_ON_DARK = "#AFC0D6";
+  const GOLD = "#D8B743";
+  const GOLD_HOVER = "#C7A233";
+  const HOVER_DARK = "#1C3558";
   const totalQuestions = assessmentConfig.questions.length;
   const totalSteps = totalQuestions + 2; // +1 for q16_additional_notes, +1 for email capture
 
@@ -17,6 +27,31 @@ export default function AssessmentPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Let host pages auto-resize the iframe to avoid nested scrolling.
+  useEffect(() => {
+    const emitHeight = () => {
+      if (window.parent === window) return;
+      const height = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      );
+      window.parent.postMessage(
+        { type: "humtech-scorecard-height", height },
+        "*"
+      );
+    };
+
+    emitHeight();
+    const observer = new ResizeObserver(emitHeight);
+    observer.observe(document.body);
+    window.addEventListener("resize", emitHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", emitHeight);
+    };
+  }, [state.currentStep, isSubmitting, isSubmitted]);
 
   const isNotesStep = state.currentStep === totalQuestions;
   const isEmailStep = state.currentStep === totalQuestions + 1;
@@ -273,18 +308,18 @@ export default function AssessmentPage() {
   if (isSubmitted) {
     return (
       <main className="w-full py-4 sm:py-8 px-3 sm:px-4 flex items-center justify-center">
-        <div className="max-w-2xl w-full mx-auto rounded-[24px] p-5 sm:p-7 shadow-lg" style={{ backgroundColor: "#E1E4E9" }}>
-          <div className="rounded-lg shadow-md p-6 sm:p-8 text-center" style={{ backgroundColor: '#E1E4E9' }}>
+        <div className="max-w-2xl w-full mx-auto rounded-[24px] p-5 sm:p-7 shadow-lg" style={{ backgroundColor: CARD_BG, border: `1px solid ${BORDER_SOFT}` }}>
+          <div className="rounded-lg p-6 sm:p-8 text-center" style={{ backgroundColor: SURFACE_BG, border: `1px solid ${BORDER_SOFT}` }}>
             <div className="mb-6">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#6BB790' }}>
-                <svg className="w-8 h-8" style={{ color: '#E1E4E9' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8" style={{ color: SURFACE_BG }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: NAVY_LIGHT }}>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: TEXT_ON_DARK }}>
                 Thank You!
               </h1>
-              <p className="text-lg" style={{ color: NAVY_LIGHT }}>
+              <p className="text-lg" style={{ color: MUTED_ON_DARK }}>
                 Your assessment has been submitted successfully. Your results will open in a new tab and be emailed to you.
               </p>
             </div>
@@ -296,25 +331,25 @@ export default function AssessmentPage() {
 
   return (
     <main className="w-full py-4 sm:py-6 px-3 sm:px-4 flex justify-center">
-      <div className="w-full max-w-4xl rounded-[24px] p-5 sm:p-7 shadow-lg" style={{ backgroundColor: "#E1E4E9" }}>
+      <div className="w-full max-w-3xl rounded-[24px] p-5 sm:p-7 shadow-lg" style={{ backgroundColor: CARD_BG, border: `1px solid ${BORDER_SOFT}` }}>
         {/* Progress Bar */}
         <div className="mb-3 sm:mb-4">
-          <div className="flex justify-between text-xs mb-2" style={{ color: NAVY_LIGHT }}>
+          <div className="flex justify-between text-xs mb-2" style={{ color: TEXT_ON_DARK }}>
             <span>
               Step {state.currentStep + 1} of {totalSteps}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full rounded-full h-2" style={{ backgroundColor: '#DFE3E9' }}>
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: 'rgba(255,255,255,0.20)' }}>
             <div
               className="h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%`, backgroundColor: '#D8B743' }}
+              style={{ width: `${progress}%`, backgroundColor: GOLD }}
             />
           </div>
         </div>
 
         {/* Question, Notes, or Email Capture */}
-        <div className="rounded-lg shadow-md p-4 sm:p-5" style={{ backgroundColor: '#FBFCFC' }}>
+        <div className="rounded-lg p-4 sm:p-5" style={{ backgroundColor: SURFACE_BG, border: `1px solid ${FIELD_BORDER}` }}>
           {currentQuestion ? (
             <>
               <div className="mb-4">
@@ -344,8 +379,8 @@ export default function AssessmentPage() {
                         onClick={handleClick}
                         className="w-full text-left p-3 rounded-lg border-2 transition-all text-sm"
                         style={{
-                          borderColor: isSelected ? '#D8B743' : '#DFE3E9',
-                          backgroundColor: isSelected ? '#FEF9EC' : '#FBFCFC',
+                          borderColor: isSelected ? GOLD : FIELD_BORDER,
+                          backgroundColor: isSelected ? '#FEF9EC' : FIELD_BG,
                         }}
                       >
                         <div className="flex items-start">
@@ -354,8 +389,8 @@ export default function AssessmentPage() {
                             <div
                               className="w-4 h-4 rounded border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
                               style={{
-                                borderColor: isSelected ? '#D8B743' : NAVY_LIGHT,
-                                backgroundColor: isSelected ? '#D8B743' : 'transparent',
+                                borderColor: isSelected ? GOLD : NAVY_LIGHT,
+                                backgroundColor: isSelected ? GOLD : 'transparent',
                               }}
                             >
                               {isSelected && (
@@ -369,8 +404,8 @@ export default function AssessmentPage() {
                             <div
                               className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
                               style={{
-                                borderColor: isSelected ? '#D8B743' : NAVY_LIGHT,
-                                backgroundColor: isSelected ? '#D8B743' : 'transparent',
+                                borderColor: isSelected ? GOLD : NAVY_LIGHT,
+                                backgroundColor: isSelected ? GOLD : 'transparent',
                               }}
                             >
                               {isSelected && (
@@ -396,12 +431,12 @@ export default function AssessmentPage() {
                             rows={3}
                             className="w-full px-3 py-2 rounded-lg outline-none resize-none border-2 text-sm"
                             style={{
-                              borderColor: '#DFE3E9',
-                              backgroundColor: '#FBFCFC',
+                              borderColor: FIELD_BORDER,
+                              backgroundColor: FIELD_BG,
                               color: NAVY_LIGHT,
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                            onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                            onFocus={(e) => e.target.style.borderColor = GOLD}
+                            onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                           />
                         </div>
                       )}
@@ -430,12 +465,12 @@ export default function AssessmentPage() {
                   rows={5}
                   className="w-full px-3 py-2.5 rounded-lg outline-none resize-none border-2 text-sm"
                   style={{
-                    borderColor: '#DFE3E9',
-                    backgroundColor: '#FBFCFC',
+                    borderColor: FIELD_BORDER,
+                    backgroundColor: FIELD_BG,
                     color: NAVY_LIGHT,
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                  onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                  onFocus={(e) => e.target.style.borderColor = GOLD}
+                  onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                 />
               </div>
             </>
@@ -464,12 +499,12 @@ export default function AssessmentPage() {
                     placeholder="John Smith"
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
-                      borderColor: '#DFE3E9',
-                      backgroundColor: '#FBFCFC',
+                      borderColor: FIELD_BORDER,
+                      backgroundColor: FIELD_BG,
                       color: NAVY_LIGHT,
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                    onFocus={(e) => e.target.style.borderColor = GOLD}
+                    onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                   />
                 </div>
 
@@ -489,12 +524,12 @@ export default function AssessmentPage() {
                     placeholder="you@example.com"
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
-                      borderColor: '#DFE3E9',
-                      backgroundColor: '#FBFCFC',
+                      borderColor: FIELD_BORDER,
+                      backgroundColor: FIELD_BG,
                       color: NAVY_LIGHT,
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                    onFocus={(e) => e.target.style.borderColor = GOLD}
+                    onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                   />
                 </div>
 
@@ -514,12 +549,12 @@ export default function AssessmentPage() {
                     placeholder="Acme Inc."
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
-                      borderColor: '#DFE3E9',
-                      backgroundColor: '#FBFCFC',
+                      borderColor: FIELD_BORDER,
+                      backgroundColor: FIELD_BG,
                       color: NAVY_LIGHT,
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                    onFocus={(e) => e.target.style.borderColor = GOLD}
+                    onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                   />
                 </div>
 
@@ -544,12 +579,12 @@ export default function AssessmentPage() {
                     placeholder="+44 20 7946 0958"
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
-                      borderColor: '#DFE3E9',
-                      backgroundColor: '#FBFCFC',
+                      borderColor: FIELD_BORDER,
+                      backgroundColor: FIELD_BG,
                       color: NAVY_LIGHT,
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                    onFocus={(e) => e.target.style.borderColor = GOLD}
+                    onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                   />
                 </div>
 
@@ -569,12 +604,12 @@ export default function AssessmentPage() {
                     placeholder="Head of Operations"
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
-                      borderColor: '#DFE3E9',
-                      backgroundColor: '#FBFCFC',
+                      borderColor: FIELD_BORDER,
+                      backgroundColor: FIELD_BG,
                       color: NAVY_LIGHT,
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#D8B743'}
-                    onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
+                    onFocus={(e) => e.target.style.borderColor = GOLD}
+                    onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                   />
                 </div>
               </div>
@@ -589,20 +624,20 @@ export default function AssessmentPage() {
             disabled={state.currentStep === 0}
             className="px-5 py-2.5 font-medium rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             style={{
-              color: state.currentStep === 0 ? '#9CA3AF' : NAVY_LIGHT,
-              borderColor: state.currentStep === 0 ? '#D1D5DB' : NAVY_LIGHT,
+              color: state.currentStep === 0 ? MUTED_ON_DARK : TEXT_ON_DARK,
+              borderColor: state.currentStep === 0 ? "rgba(255,255,255,0.20)" : BORDER_SOFT,
               backgroundColor: 'transparent',
             }}
             onMouseEnter={(e) => {
               if (state.currentStep !== 0) {
-                e.currentTarget.style.backgroundColor = '#F3F6FA';
-                e.currentTarget.style.borderColor = NAVY_LIGHT;
+                e.currentTarget.style.backgroundColor = HOVER_DARK;
+                e.currentTarget.style.borderColor = BORDER_SOFT;
               }
             }}
             onMouseLeave={(e) => {
               if (state.currentStep !== 0) {
                 e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.borderColor = NAVY_LIGHT;
+                e.currentTarget.style.borderColor = BORDER_SOFT;
               }
             }}
           >
@@ -615,17 +650,17 @@ export default function AssessmentPage() {
               disabled={!canProceed || isSubmitting}
               className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
-                backgroundColor: canProceed && !isSubmitting ? '#D8B743' : '#DFE3E9',
-                color: canProceed && !isSubmitting ? NAVY_LIGHT : '#9CA3AF',
+                backgroundColor: canProceed && !isSubmitting ? GOLD : 'rgba(255,255,255,0.18)',
+                color: canProceed && !isSubmitting ? NAVY_LIGHT : MUTED_ON_DARK,
               }}
               onMouseEnter={(e) => {
                 if (canProceed && !isSubmitting) {
-                  e.currentTarget.style.backgroundColor = '#3DB2DD';
+                  e.currentTarget.style.backgroundColor = GOLD_HOVER;
                 }
               }}
               onMouseLeave={(e) => {
                 if (canProceed && !isSubmitting) {
-                  e.currentTarget.style.backgroundColor = '#D8B743';
+                  e.currentTarget.style.backgroundColor = GOLD;
                 }
               }}
             >
@@ -637,17 +672,17 @@ export default function AssessmentPage() {
               disabled={!canProceed}
               className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
-                backgroundColor: canProceed ? '#D8B743' : '#DFE3E9',
-                color: canProceed ? NAVY_LIGHT : '#9CA3AF',
+                backgroundColor: canProceed ? GOLD : 'rgba(255,255,255,0.18)',
+                color: canProceed ? NAVY_LIGHT : MUTED_ON_DARK,
               }}
               onMouseEnter={(e) => {
                 if (canProceed) {
-                  e.currentTarget.style.backgroundColor = '#3DB2DD';
+                  e.currentTarget.style.backgroundColor = GOLD_HOVER;
                 }
               }}
               onMouseLeave={(e) => {
                 if (canProceed) {
-                  e.currentTarget.style.backgroundColor = '#D8B743';
+                  e.currentTarget.style.backgroundColor = GOLD;
                 }
               }}
             >
