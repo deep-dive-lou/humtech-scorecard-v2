@@ -328,15 +328,15 @@ answers:
   A:
     text: >
       I want to be at the cutting edge but don’t want to pay big AI salaries.
-      A team of AI directors to handle everything including in-depth system/processes review,
+      A team of AI strategists to handle everything including in-depth system/processes review,
       proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements.
   B:
     text: >
       I’m keen to consider AI implementation(s) only, such as your 24/7 conversational triage system,
-      but I do not require ongoing support via your fractioned director service
+      but I do not require ongoing support via your fractional strategist service
   C:
     text: >
-      I’m happy with our existing systems, but would like to learn more about fractioned AI directors
+      I’m happy with our existing systems, but would like to learn more about fractional AI strategists
       as a standalone service
   D:
     text: >
@@ -351,4 +351,3 @@ q_id: q16_additional_notes
 type: free_text
 question: >
   Is there anything else you’d like us to know?
-
