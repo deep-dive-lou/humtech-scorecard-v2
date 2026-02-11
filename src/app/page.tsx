@@ -273,8 +273,8 @@ export default function AssessmentPage() {
   // Show thank you page after submission
   if (isSubmitted) {
     return (
-      <main className="min-h-screen py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center" style={{ backgroundColor: NAVY_DARK }}>
-        <div className="max-w-2xl w-full mx-auto">
+      <main className="py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center">
+        <div className="max-w-2xl w-full mx-auto rounded-xl border p-3 sm:p-4" style={{ borderColor: NAVY_LIGHT, backgroundColor: "#ffffff" }}>
           <div className="rounded-lg shadow-md p-6 sm:p-8 text-center" style={{ backgroundColor: '#E1E4E9' }}>
             <div className="mb-6">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#6BB790' }}>
@@ -296,17 +296,17 @@ export default function AssessmentPage() {
   }
 
   return (
-    <main className="min-h-screen py-1 sm:py-2 px-2 sm:px-3 flex items-start" style={{ backgroundColor: NAVY_DARK }}>
-      <div className="max-w-xl w-full mx-auto">
+    <main className="py-2 sm:py-3 px-2 sm:px-3 flex justify-center">
+      <div className="max-w-xl w-full mx-auto rounded-xl border p-3 sm:p-4" style={{ borderColor: NAVY_LIGHT, backgroundColor: "#ffffff" }}>
         {/* Progress Bar */}
-        <div className="mb-3 sm:mb-4 pr-8">
-          <div className="flex justify-between text-xs mb-2" style={{ color: '#E1E4E9' }}>
+        <div className="mb-3 sm:mb-4">
+          <div className="flex justify-between text-xs mb-2" style={{ color: NAVY_LIGHT }}>
             <span>
               Step {state.currentStep + 1} of {totalSteps}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full rounded-full h-2" style={{ backgroundColor: NAVY_LIGHT }}>
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: '#DFE3E9' }}>
             <div
               className="h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%`, backgroundColor: '#D8B743' }}
@@ -590,20 +590,20 @@ export default function AssessmentPage() {
             disabled={state.currentStep === 0}
             className="px-5 py-2.5 font-medium rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             style={{
-              color: state.currentStep === 0 ? '#E1E4E9' : '#E1E4E9',
-              borderColor: state.currentStep === 0 ? NAVY_LIGHT : '#E1E4E9',
+              color: state.currentStep === 0 ? '#9CA3AF' : NAVY_LIGHT,
+              borderColor: state.currentStep === 0 ? '#D1D5DB' : NAVY_LIGHT,
               backgroundColor: 'transparent',
             }}
             onMouseEnter={(e) => {
               if (state.currentStep !== 0) {
-                e.currentTarget.style.backgroundColor = '#3DB2DD';
-                e.currentTarget.style.borderColor = '#3DB2DD';
+                e.currentTarget.style.backgroundColor = '#F3F6FA';
+                e.currentTarget.style.borderColor = NAVY_LIGHT;
               }
             }}
             onMouseLeave={(e) => {
               if (state.currentStep !== 0) {
                 e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.borderColor = '#E1E4E9';
+                e.currentTarget.style.borderColor = NAVY_LIGHT;
               }
             }}
           >
@@ -616,8 +616,8 @@ export default function AssessmentPage() {
               disabled={!canProceed || isSubmitting}
               className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
-                backgroundColor: canProceed && !isSubmitting ? '#D8B743' : NAVY_LIGHT,
-                color: canProceed && !isSubmitting ? NAVY_LIGHT : '#E1E4E9',
+                backgroundColor: canProceed && !isSubmitting ? '#D8B743' : '#DFE3E9',
+                color: canProceed && !isSubmitting ? NAVY_LIGHT : '#9CA3AF',
               }}
               onMouseEnter={(e) => {
                 if (canProceed && !isSubmitting) {
@@ -638,8 +638,8 @@ export default function AssessmentPage() {
               disabled={!canProceed}
               className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
-                backgroundColor: canProceed ? '#D8B743' : NAVY_LIGHT,
-                color: canProceed ? NAVY_LIGHT : '#E1E4E9',
+                backgroundColor: canProceed ? '#D8B743' : '#DFE3E9',
+                color: canProceed ? NAVY_LIGHT : '#9CA3AF',
               }}
               onMouseEnter={(e) => {
                 if (canProceed) {
