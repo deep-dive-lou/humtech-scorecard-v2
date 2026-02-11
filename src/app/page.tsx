@@ -274,7 +274,7 @@ export default function AssessmentPage() {
   if (isSubmitted) {
     return (
       <main className="py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center">
-        <div className="max-w-2xl w-full mx-auto rounded-xl border p-3 sm:p-4" style={{ borderColor: NAVY_LIGHT, backgroundColor: "#ffffff" }}>
+        <div className="max-w-2xl w-full mx-auto">
           <div className="rounded-lg shadow-md p-6 sm:p-8 text-center" style={{ backgroundColor: '#E1E4E9' }}>
             <div className="mb-6">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#6BB790' }}>
@@ -297,7 +297,7 @@ export default function AssessmentPage() {
 
   return (
     <main className="py-2 sm:py-3 px-2 sm:px-3 flex justify-center">
-      <div className="max-w-xl w-full mx-auto rounded-xl border p-3 sm:p-4" style={{ borderColor: NAVY_LIGHT, backgroundColor: "#ffffff" }}>
+      <div className="max-w-xl w-full mx-auto">
         {/* Progress Bar */}
         <div className="mb-3 sm:mb-4">
           <div className="flex justify-between text-xs mb-2" style={{ color: NAVY_LIGHT }}>
