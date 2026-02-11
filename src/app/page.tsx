@@ -5,6 +5,8 @@ import { assessmentConfig } from "@/lib/assessment/config";
 import { AssessmentState } from "@/lib/assessment/types";
 
 export default function AssessmentPage() {
+  const NAVY_LIGHT = "#122845";
+  const NAVY_DARK = "#060f1e";
   const totalQuestions = assessmentConfig.questions.length;
   const totalSteps = totalQuestions + 2; // +1 for q16_additional_notes, +1 for email capture
 
@@ -271,7 +273,7 @@ export default function AssessmentPage() {
   // Show thank you page after submission
   if (isSubmitted) {
     return (
-      <main className="min-h-screen py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center" style={{ backgroundColor: '#193050' }}>
+      <main className="min-h-screen py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center" style={{ backgroundColor: NAVY_DARK }}>
         <div className="max-w-2xl w-full mx-auto">
           <div className="rounded-lg shadow-md p-6 sm:p-8 text-center" style={{ backgroundColor: '#E1E4E9' }}>
             <div className="mb-6">
@@ -280,10 +282,10 @@ export default function AssessmentPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#193050' }}>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: NAVY_LIGHT }}>
                 Thank You!
               </h1>
-              <p className="text-lg" style={{ color: '#193050' }}>
+              <p className="text-lg" style={{ color: NAVY_LIGHT }}>
                 Your assessment has been submitted successfully. Your results will open in a new tab and be emailed to you.
               </p>
             </div>
@@ -294,8 +296,8 @@ export default function AssessmentPage() {
   }
 
   return (
-    <main className="min-h-screen py-2 sm:py-4 px-2 sm:px-4 flex items-center" style={{ backgroundColor: '#193050' }}>
-      <div className="max-w-md sm:max-w-lg w-full mx-auto">
+    <main className="min-h-screen py-1 sm:py-2 px-2 sm:px-3 flex items-start" style={{ backgroundColor: NAVY_DARK }}>
+      <div className="max-w-xl w-full mx-auto">
         {/* Progress Bar */}
         <div className="mb-3 sm:mb-4 pr-8">
           <div className="flex justify-between text-xs mb-2" style={{ color: '#E1E4E9' }}>
@@ -304,7 +306,7 @@ export default function AssessmentPage() {
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full rounded-full h-2" style={{ backgroundColor: '#193050' }}>
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: NAVY_LIGHT }}>
             <div
               className="h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%`, backgroundColor: '#D8B743' }}
@@ -317,14 +319,14 @@ export default function AssessmentPage() {
           {currentQuestion ? (
             <>
               <div className="mb-4">
-                <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full mb-2.5" style={{ backgroundColor: '#D8B743', color: '#193050' }}>
+                <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full mb-2.5" style={{ backgroundColor: '#D8B743', color: NAVY_LIGHT }}>
                   {
                     assessmentConfig.pillars.find(
                       (p) => p.id === currentQuestion.pillar
                     )?.name
                   }
                 </span>
-                <h2 className="text-base sm:text-lg font-bold leading-snug" style={{ color: '#193050' }}>
+                <h2 className="text-base sm:text-lg font-bold leading-snug" style={{ color: NAVY_LIGHT }}>
                   {currentQuestion.text}
                 </h2>
               </div>
@@ -353,12 +355,12 @@ export default function AssessmentPage() {
                             <div
                               className="w-4 h-4 rounded border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
                               style={{
-                                borderColor: isSelected ? '#D8B743' : '#193050',
+                                borderColor: isSelected ? '#D8B743' : NAVY_LIGHT,
                                 backgroundColor: isSelected ? '#D8B743' : 'transparent',
                               }}
                             >
                               {isSelected && (
-                                <svg className="w-3 h-3" style={{ color: '#193050' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" style={{ color: NAVY_LIGHT }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
                               )}
@@ -368,18 +370,18 @@ export default function AssessmentPage() {
                             <div
                               className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
                               style={{
-                                borderColor: isSelected ? '#D8B743' : '#193050',
+                                borderColor: isSelected ? '#D8B743' : NAVY_LIGHT,
                                 backgroundColor: isSelected ? '#D8B743' : 'transparent',
                               }}
                             >
                               {isSelected && (
-                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#193050' }} />
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: NAVY_LIGHT }} />
                               )}
                             </div>
                           )}
                           <span
                             className={isSelected ? 'font-medium' : ''}
-                            style={{ color: '#193050' }}
+                            style={{ color: NAVY_LIGHT }}
                           >
                             {option.label}
                           </span>
@@ -397,7 +399,7 @@ export default function AssessmentPage() {
                             style={{
                               borderColor: '#DFE3E9',
                               backgroundColor: '#FBFCFC',
-                              color: '#193050',
+                              color: NAVY_LIGHT,
                             }}
                             onFocus={(e) => e.target.style.borderColor = '#D8B743'}
                             onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
@@ -412,10 +414,10 @@ export default function AssessmentPage() {
           ) : isNotesStep ? (
             <>
               <div className="mb-5">
-                <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#193050' }}>
+                <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: NAVY_LIGHT }}>
                   Is there anything else you&apos;d like us to know?
                 </h2>
-                <p className="text-sm" style={{ color: '#193050' }}>
+                <p className="text-sm" style={{ color: NAVY_LIGHT }}>
                   Please share any additional information that might help us understand your needs better (optional).
                 </p>
               </div>
@@ -431,7 +433,7 @@ export default function AssessmentPage() {
                   style={{
                     borderColor: '#DFE3E9',
                     backgroundColor: '#FBFCFC',
-                    color: '#193050',
+                    color: NAVY_LIGHT,
                   }}
                   onFocus={(e) => e.target.style.borderColor = '#D8B743'}
                   onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
@@ -441,7 +443,7 @@ export default function AssessmentPage() {
           ) : (
             <>
               <div className="mb-5">
-                <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#193050' }}>
+                <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: NAVY_LIGHT }}>
                   Get Your Results
                 </h2>
               </div>
@@ -451,7 +453,7 @@ export default function AssessmentPage() {
                   <label
                     htmlFor="name"
                     className="block text-sm font-medium mb-2"
-                    style={{ color: '#193050' }}
+                    style={{ color: NAVY_LIGHT }}
                   >
                     Name <span style={{ color: '#D8B743' }}>*</span>
                   </label>
@@ -465,7 +467,7 @@ export default function AssessmentPage() {
                     style={{
                       borderColor: '#DFE3E9',
                       backgroundColor: '#FBFCFC',
-                      color: '#193050',
+                      color: NAVY_LIGHT,
                     }}
                     onFocus={(e) => e.target.style.borderColor = '#D8B743'}
                     onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
@@ -476,7 +478,7 @@ export default function AssessmentPage() {
                   <label
                     htmlFor="email"
                     className="block text-sm font-medium mb-2"
-                    style={{ color: '#193050' }}
+                    style={{ color: NAVY_LIGHT }}
                   >
                     Email Address <span style={{ color: '#D8B743' }}>*</span>
                   </label>
@@ -490,7 +492,7 @@ export default function AssessmentPage() {
                     style={{
                       borderColor: '#DFE3E9',
                       backgroundColor: '#FBFCFC',
-                      color: '#193050',
+                      color: NAVY_LIGHT,
                     }}
                     onFocus={(e) => e.target.style.borderColor = '#D8B743'}
                     onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
@@ -501,7 +503,7 @@ export default function AssessmentPage() {
                   <label
                     htmlFor="company"
                     className="block text-sm font-medium mb-2"
-                    style={{ color: '#193050' }}
+                    style={{ color: NAVY_LIGHT }}
                   >
                     Company <span style={{ color: '#D8B743' }}>*</span>
                   </label>
@@ -515,7 +517,7 @@ export default function AssessmentPage() {
                     style={{
                       borderColor: '#DFE3E9',
                       backgroundColor: '#FBFCFC',
-                      color: '#193050',
+                      color: NAVY_LIGHT,
                     }}
                     onFocus={(e) => e.target.style.borderColor = '#D8B743'}
                     onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
@@ -526,7 +528,7 @@ export default function AssessmentPage() {
                   <label
                     htmlFor="mobile"
                     className="block text-sm font-medium mb-2"
-                    style={{ color: '#193050' }}
+                    style={{ color: NAVY_LIGHT }}
                   >
                     Phone <span style={{ color: '#D8B743' }}>*</span>
                   </label>
@@ -545,7 +547,7 @@ export default function AssessmentPage() {
                     style={{
                       borderColor: '#DFE3E9',
                       backgroundColor: '#FBFCFC',
-                      color: '#193050',
+                      color: NAVY_LIGHT,
                     }}
                     onFocus={(e) => e.target.style.borderColor = '#D8B743'}
                     onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
@@ -556,7 +558,7 @@ export default function AssessmentPage() {
                   <label
                     htmlFor="title"
                     className="block text-sm font-medium mb-2"
-                    style={{ color: '#193050' }}
+                    style={{ color: NAVY_LIGHT }}
                   >
                     Job Title <span className="text-xs" style={{ color: '#6B7280' }}>(optional)</span>
                   </label>
@@ -570,7 +572,7 @@ export default function AssessmentPage() {
                     style={{
                       borderColor: '#DFE3E9',
                       backgroundColor: '#FBFCFC',
-                      color: '#193050',
+                      color: NAVY_LIGHT,
                     }}
                     onFocus={(e) => e.target.style.borderColor = '#D8B743'}
                     onBlur={(e) => e.target.style.borderColor = '#DFE3E9'}
@@ -589,7 +591,7 @@ export default function AssessmentPage() {
             className="px-5 py-2.5 font-medium rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             style={{
               color: state.currentStep === 0 ? '#E1E4E9' : '#E1E4E9',
-              borderColor: state.currentStep === 0 ? '#193050' : '#E1E4E9',
+              borderColor: state.currentStep === 0 ? NAVY_LIGHT : '#E1E4E9',
               backgroundColor: 'transparent',
             }}
             onMouseEnter={(e) => {
@@ -614,8 +616,8 @@ export default function AssessmentPage() {
               disabled={!canProceed || isSubmitting}
               className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
-                backgroundColor: canProceed && !isSubmitting ? '#D8B743' : '#193050',
-                color: canProceed && !isSubmitting ? '#193050' : '#E1E4E9',
+                backgroundColor: canProceed && !isSubmitting ? '#D8B743' : NAVY_LIGHT,
+                color: canProceed && !isSubmitting ? NAVY_LIGHT : '#E1E4E9',
               }}
               onMouseEnter={(e) => {
                 if (canProceed && !isSubmitting) {
@@ -636,8 +638,8 @@ export default function AssessmentPage() {
               disabled={!canProceed}
               className="px-5 py-2.5 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               style={{
-                backgroundColor: canProceed ? '#D8B743' : '#193050',
-                color: canProceed ? '#193050' : '#E1E4E9',
+                backgroundColor: canProceed ? '#D8B743' : NAVY_LIGHT,
+                color: canProceed ? NAVY_LIGHT : '#E1E4E9',
               }}
               onMouseEnter={(e) => {
                 if (canProceed) {
