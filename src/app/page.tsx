@@ -288,9 +288,28 @@ export default function AssessmentPage() {
         throw new Error("Missing submission_id in webhook response");
       }
 
-      window.location.assign(
-        `https://humtech.ai/results?submission=${encodeURIComponent(data.submission_id)}`
-      );
+      const targetOrigin = "https://www.humtech.ai";
+      const targetUrl = `${targetOrigin}/results?submission=${encodeURIComponent(data.submission_id)}`;
+
+      // Let host pages redirect themselves when embedded in an iframe.
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(
+          { type: "humtech-scorecard-complete", submission: data.submission_id },
+          targetOrigin
+        );
+      }
+
+      // Prefer top-level navigation; fall back to current window navigation.
+      if (window.top && window.top !== window) {
+        try {
+          window.top.location.href = targetUrl;
+          return;
+        } catch (topNavError) {
+          console.warn("Top-level navigation failed, falling back to local redirect.", topNavError);
+        }
+      }
+
+      window.location.assign(targetUrl);
 
       console.log("Assessment submitted successfully:", state);
     } catch (error) {
