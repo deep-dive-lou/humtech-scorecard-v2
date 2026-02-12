@@ -50,7 +50,7 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q4_show_rate",
       pillar: "appointment_reliability_conversion",
-      text: "What percentage of booked appointments show up?",
+      text: "What percentage of new leads schedule an appointment/call without human intervention?",
       isScored: true,
       options: [
         { id: "0-30", label: "0\u201330%", answerId: "A" },
@@ -88,7 +88,7 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q7_metric_tracking",
       pillar: "operational_focus_time_efficiency",
-      text: "Do you follow \"If you can't measure it, you can't manage it\"\u2014tracking key metrics like Lead Velocity Rate, Pipeline Coverage Ratio, Sales Cycle Length, DNA + engagement, LTV, CRO, ROAS, and CAC?",
+      text: "Do you follow \"If you can't measure it, you can't manage it\"\u2014tracking key metrics e.g. time to lead engagement, Conversion %, Staff Deflection Savings, pipeline coverage, and sales cycle length?",
       isScored: true,
       options: [
         { id: "100", label: "100% - there is not a metric with an impact on revenue or time that we don't measure.", answerId: "A" },
@@ -141,7 +141,7 @@ export const assessmentConfig: AssessmentConfig = {
       isScored: true,
       options: [
         { id: "fully-automated", label: "These are fully automated in one branded portal which handles document upload requests, signatures and chasing. Templates are used to eliminate manual repetition", answerId: "A" },
-        { id: "third-party", label: "These are automated through a third party subscription platform.", answerId: "B" },
+        { id: "third-party", label: "This is facilitated through a third-party subscription platform (which one?), and does it meet your needs?", answerId: "B", hasTextInput: true },
         { id: "manual", label: "We request any documents or signatures via email from the client", answerId: "C" },
       ],
     },
@@ -161,8 +161,9 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q13_desired_outcome",
       pillar: "informative",
-      text: "What best describes the outcome you're looking for?",
+      text: "What best describes the outcome you're looking for? (Select all that apply.)",
       isScored: false,
+      isMultiSelect: true,
       options: [
         { id: "time-saving", label: "Time saving (Deflection ROI). Our team waste a lot of time performing repetitive tasks (e.g. data entry, client management, document requests, chasing).", answerId: "A" },
         { id: "revenue", label: "Revenue increase. We'd like to increase revenue without additional marketing spend through targeted AI efficiency upgrades", answerId: "B" },
@@ -174,8 +175,9 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q14_ai_barriers",
       pillar: "informative",
-      text: "What has prevented you from implementing comprehensive AI strategy previously?",
+      text: "What has prevented you from implementing comprehensive AI strategy previously? (Select all that apply.)",
       isScored: false,
+      isMultiSelect: true,
       options: [
         { id: "tech-failed", label: "We've tried other platforms/apps and the technology did not meet our standards or solve a problem or evidence sufficient ROI/use case", answerId: "A" },
         { id: "expensive", label: "We've found options are too expensive", answerId: "B" },
@@ -186,14 +188,13 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q15_solution_type",
       pillar: "informative",
-      text: "Which type of solution would best suit your needs?",
+      text: "15. Which type of solution would best suit your needs?",
       isScored: false,
       options: [
-        { id: "full-service", label: "I want to be at the cutting edge but don't want to pay big AI salaries. A team of AI strategists to handle everything including in-depth system/processes review, proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements.", answerId: "A" },
-        { id: "implementation-only", label: "I'm keen to consider AI implementation(s) only, such as your 24/7 conversational triage system, but I do not require ongoing support via your fractional strategist service", answerId: "B" },
-        { id: "directors-only", label: "I'm happy with our existing systems, but would like to learn more about fractional AI strategists as a standalone service", answerId: "C" },
-        { id: "not-concerned", label: "I'm not currently concerned about the opportunity loss in time, revenue and lost business", answerId: "D" },
-        { id: "other", label: "Other, please specify (e.g. sales training / SOP's, marketing optimisation / \"I just want my business to make more money without spending more on ads\")", answerId: "E", hasTextInput: true },
+        { id: "full-service", label: "I want to be at the cutting edge but don't want to pay big AI salaries. AI experts to handle everything including in-depth system/processes review, proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements.", answerId: "A" },
+        { id: "directors-only", label: "I'm happy with our existing systems, but would like to learn more about your fractioned AI team", answerId: "B" },
+        { id: "not-concerned", label: "I'm not currently concerned about the opportunity loss in time, revenue and lost business", answerId: "C" },
+        { id: "other", label: "Other, please specify:", answerId: "D", hasTextInput: true },
       ],
     },
   ],

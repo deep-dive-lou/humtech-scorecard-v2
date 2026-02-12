@@ -37,6 +37,7 @@ export interface AssessmentState {
   email?: string;
   name?: string;
   company?: string;
+  revenueRange5to500m?: "yes" | "no";
   mobile?: string; // optional
   title?: string; // optional
   notes?: string; // q16_additional_notes free text

@@ -141,6 +141,10 @@ export default function AssessmentPage() {
     setState((prev) => ({ ...prev, company }));
   };
 
+  const handleRevenueRangeChange = (revenueRange5to500m: "yes" | "no") => {
+    setState((prev) => ({ ...prev, revenueRange5to500m }));
+  };
+
   const handleMobileChange = (mobile: string) => {
     setState((prev) => ({ ...prev, mobile }));
   };
@@ -235,6 +239,7 @@ export default function AssessmentPage() {
         name: state.name,
         email: state.email,
         company: state.company,
+        revenueRange5to500m: state.revenueRange5to500m || "",
         mobile: state.mobile || "",
         title: state.title || "",
       },
@@ -310,7 +315,7 @@ export default function AssessmentPage() {
   };
 
   const canProceed = isEmailStep
-    ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim() && state.mobile && state.mobile.trim()
+    ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim() && state.revenueRange5to500m && state.mobile && state.mobile.trim()
     : isNotesStep
     ? true // Notes is optional
     : currentQuestion && (
@@ -325,18 +330,36 @@ export default function AssessmentPage() {
   if (isSubmitted) {
     return (
       <main className="w-full py-4 sm:py-8 px-3 sm:px-4 flex items-center justify-center">
-        <div className="max-w-2xl w-full mx-auto rounded-[24px] p-5 sm:p-7 shadow-lg" style={{ backgroundColor: CARD_BG, border: `1px solid ${BORDER_SOFT}` }}>
-          <div className="rounded-lg p-6 sm:p-8 text-center" style={{ backgroundColor: SURFACE_BG, border: `1px solid ${BORDER_SOFT}` }}>
+        <div
+          className="max-w-2xl w-full mx-auto rounded-[24px] p-1.5 sm:p-2 shadow-lg"
+          style={{
+            background: "linear-gradient(135deg, rgba(216,183,67,0.30), rgba(18,40,69,0.95) 35%, rgba(18,40,69,1) 100%)",
+            border: `1px solid ${BORDER_SOFT}`,
+          }}
+        >
+          <div
+            className="rounded-[18px] p-6 sm:p-10 text-center"
+            style={{ backgroundColor: SURFACE_BG, border: `1px solid ${FIELD_BORDER}` }}
+          >
             <div className="mb-6">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#6BB790' }}>
-                <svg className="w-8 h-8" style={{ color: SURFACE_BG }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div
+                className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-sm"
+                style={{ backgroundColor: '#64B58D' }}
+              >
+                <svg className="w-8 h-8" style={{ color: "#FFFFFF" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: TEXT_ON_DARK }}>
+              <div
+                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold mb-4"
+                style={{ backgroundColor: "#EEF7F1", color: "#2E7D57", border: "1px solid #CDE9DA" }}
+              >
+                Submission complete
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-3" style={{ color: NAVY_LIGHT }}>
                 Thank You!
               </h1>
-              <p className="text-lg" style={{ color: MUTED_ON_DARK }}>
+              <p className="text-lg leading-relaxed" style={{ color: "#314A69" }}>
                 Your assessment has been submitted successfully. Your results will open in a new tab and be emailed to you.
               </p>
             </div>
@@ -552,31 +575,6 @@ export default function AssessmentPage() {
 
                 <div>
                   <label
-                    htmlFor="company"
-                    className="block text-sm font-medium mb-2"
-                    style={{ color: NAVY_LIGHT }}
-                  >
-                    Company <span style={{ color: '#D8B743' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    value={state.company || ""}
-                    onChange={(e) => handleCompanyChange(e.target.value)}
-                    placeholder="Acme Inc."
-                    className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
-                    style={{
-                      borderColor: FIELD_BORDER,
-                      backgroundColor: FIELD_BG,
-                      color: NAVY_LIGHT,
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = GOLD}
-                    onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
-                  />
-                </div>
-
-                <div>
-                  <label
                     htmlFor="mobile"
                     className="block text-sm font-medium mb-2"
                     style={{ color: NAVY_LIGHT }}
@@ -594,6 +592,31 @@ export default function AssessmentPage() {
                       handleMobileChange(sanitized);
                     }}
                     placeholder="+44 20 7946 0958"
+                    className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
+                    style={{
+                      borderColor: FIELD_BORDER,
+                      backgroundColor: FIELD_BG,
+                      color: NAVY_LIGHT,
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = GOLD}
+                    onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="company"
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: NAVY_LIGHT }}
+                  >
+                    Company <span style={{ color: '#D8B743' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="company"
+                    value={state.company || ""}
+                    onChange={(e) => handleCompanyChange(e.target.value)}
+                    placeholder="Acme Inc."
                     className="w-full px-3 py-2.5 rounded-lg outline-none border-2 text-sm"
                     style={{
                       borderColor: FIELD_BORDER,
@@ -628,6 +651,43 @@ export default function AssessmentPage() {
                     onFocus={(e) => e.target.style.borderColor = GOLD}
                     onBlur={(e) => e.target.style.borderColor = FIELD_BORDER}
                   />
+                </div>
+
+                <div>
+                  <fieldset>
+                    <legend
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: NAVY_LIGHT }}
+                    >
+                      Is your business revenue between £5m and £500m? <span style={{ color: '#D8B743' }}>*</span>
+                    </legend>
+                    <div className="flex flex-wrap gap-4">
+                      <label className="inline-flex items-center gap-2 text-sm cursor-pointer" style={{ color: NAVY_LIGHT }}>
+                        <input
+                          type="radio"
+                          name="revenueRange5to500m"
+                          value="yes"
+                          checked={state.revenueRange5to500m === "yes"}
+                          onChange={() => handleRevenueRangeChange("yes")}
+                          className="h-4 w-4"
+                          style={{ accentColor: GOLD }}
+                        />
+                        Yes
+                      </label>
+                      <label className="inline-flex items-center gap-2 text-sm cursor-pointer" style={{ color: NAVY_LIGHT }}>
+                        <input
+                          type="radio"
+                          name="revenueRange5to500m"
+                          value="no"
+                          checked={state.revenueRange5to500m === "no"}
+                          onChange={() => handleRevenueRangeChange("no")}
+                          className="h-4 w-4"
+                          style={{ accentColor: GOLD }}
+                        />
+                        No
+                      </label>
+                    </div>
+                  </fieldset>
                 </div>
               </div>
             </>
@@ -711,3 +771,4 @@ export default function AssessmentPage() {
     </main>
   );
 }
+
