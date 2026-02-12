@@ -2,7 +2,7 @@ import { AssessmentConfig } from "./types";
 
 export const assessmentConfig: AssessmentConfig = {
   pillars: [
-    { id: "lead_engagement_speed", name: "Lead Engagement & Speed" },
+    { id: "lead_engagement_speed", name: "Lead Engagement & Efficacy" },
     { id: "appointment_reliability_conversion", name: "Appointment Reliability & Conversion" },
     { id: "operational_focus_time_efficiency", name: "Operational Focus & Time Efficiency" },
     { id: "systems_automation_maturity", name: "Systems & Automation Maturity" },
