@@ -259,55 +259,40 @@ export default function AssessmentPage() {
     }
 
     try {
-      // Send to both webhooks in parallel
-      const webhookPromises = [
-        fetch(webhookUrl, {
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const data = await res.json() as { submission_id?: string };
+
+      // Keep optional test webhook for mirror testing, but don't block redirect.
+      if (webhookTestUrl) {
+        void fetch(webhookTestUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
-        })
-      ];
-
-      // Add test webhook if configured
-      if (webhookTestUrl) {
-        webhookPromises.push(
-          fetch(webhookTestUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          })
-        );
+        });
       }
 
-      const responses = await Promise.all(webhookPromises);
-
-      // Check if main webhook succeeded
-      if (!responses[0].ok) {
-        throw new Error(`HTTP error! status: ${responses[0].status}`);
+      if (!data.submission_id) {
+        throw new Error("Missing submission_id in webhook response");
       }
 
-      // Get the response from n8n (could be HTML or a URL)
-      const responseText = await responses[0].text();
-
-      // Check if response is a URL or HTML content
-      if (responseText.startsWith('http://') || responseText.startsWith('https://')) {
-        // If it's a URL, open it in a new tab
-        window.open(responseText.trim(), '_blank');
-      } else if (responseText.trim()) {
-        // If it's HTML content, open in a new tab and write the content
-        const newTab = window.open('', '_blank');
-        if (newTab) {
-          newTab.document.write(responseText);
-          newTab.document.close();
-        }
-      }
+      window.location.assign(
+        `https://humtech.ai/results?submission=${encodeURIComponent(data.submission_id)}`
+      );
 
       console.log("Assessment submitted successfully:", state);
-      setIsSubmitted(true);
     } catch (error) {
       console.error("Error submitting assessment:", error);
       alert("There was an error submitting your assessment. Please try again.");
