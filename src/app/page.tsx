@@ -160,6 +160,7 @@ export default function AssessmentPage() {
   const handleSubmit = async () => {
     const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "";
     const webhookTestUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_TEST_URL || "";
+    const submission_id = crypto.randomUUID();
 
     if (!webhookUrl) {
       console.error("N8N webhook URL not configured");
@@ -234,6 +235,7 @@ export default function AssessmentPage() {
     );
 
     const payload: Record<string, unknown> = {
+      submission_id,
       assessment_version: "v2",
       contact: {
         name: state.name,
