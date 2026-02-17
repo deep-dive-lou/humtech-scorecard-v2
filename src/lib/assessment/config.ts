@@ -157,6 +157,61 @@ export const assessmentConfig: AssessmentConfig = {
         { id: "other", label: "Other, please specify", answerId: "D", hasTextInput: true },
       ],
     },
+    // Qualification inputs for revenue/waterfall modeling (not scored)
+    {
+      id: "q_lead_volume",
+      pillar: "informative",
+      text: "How many new enquiries/leads does your business typically receive per month?",
+      isScored: false,
+      options: [
+        { id: "under-50", label: "Under 50", answerId: "A" },
+        { id: "50-200", label: "50-200", answerId: "B" },
+        { id: "200-500", label: "200-500", answerId: "C" },
+        { id: "500-plus", label: "500+", answerId: "D" },
+        { id: "unknown", label: "I don't know / we don't track this", answerId: "E" },
+      ],
+    },
+    {
+      id: "q_deal_value",
+      pillar: "informative",
+      text: "What is your average deal/transaction value?",
+      isScored: false,
+      options: [
+        { id: "under-500", label: "Under £500", answerId: "A" },
+        { id: "500-2000", label: "£500 to £2,000", answerId: "B" },
+        { id: "2000-10000", label: "£2,000 to £10,000", answerId: "C" },
+        { id: "10000-plus", label: "£10,000+", answerId: "D" },
+        { id: "unknown", label: "I don't know / rather not say", answerId: "E" },
+      ],
+    },
+    {
+      id: "q_estimated_gross_revenue",
+      pillar: "informative",
+      text: "Estimated gross revenue:",
+      isScored: false,
+      options: [
+        { id: "50m-plus", label: "50 million+", answerId: "A" },
+        { id: "10m-50m", label: "10-50 million", answerId: "B" },
+        { id: "5m-10m", label: "5-10 million", answerId: "C" },
+        { id: "3m-5m", label: "3-5 million", answerId: "D" },
+        { id: "under-3m", label: "Less than 3 million", answerId: "E" },
+        { id: "unknown", label: "I don't know / rather not say", answerId: "F" },
+      ],
+    },
+    {
+      id: "q_estimated_gross_margin",
+      pillar: "informative",
+      text: "Estimated gross margin:",
+      isScored: false,
+      options: [
+        { id: "90-plus", label: "90%+", answerId: "A" },
+        { id: "70-90", label: "70-90%", answerId: "B" },
+        { id: "50-70", label: "50-70%", answerId: "C" },
+        { id: "30-50", label: "30-50%", answerId: "D" },
+        { id: "under-30", label: "Under 30%", answerId: "E" },
+        { id: "unknown", label: "I don't know / rather not say", answerId: "F" },
+      ],
+    },
     // Q13-Q15: INFORMATIVE QUESTIONS (not scored)
     {
       id: "q13_desired_outcome",

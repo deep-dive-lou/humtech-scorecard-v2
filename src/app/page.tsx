@@ -141,10 +141,6 @@ export default function AssessmentPage() {
     setState((prev) => ({ ...prev, company }));
   };
 
-  const handleRevenueRangeChange = (revenueRange5to500m: "yes" | "no") => {
-    setState((prev) => ({ ...prev, revenueRange5to500m }));
-  };
-
   const handleMobileChange = (mobile: string) => {
     setState((prev) => ({ ...prev, mobile }));
   };
@@ -155,6 +151,19 @@ export default function AssessmentPage() {
 
   const handleNotesChange = (notes: string) => {
     setState((prev) => ({ ...prev, notes }));
+  };
+
+  const getSingleAnswerMeta = (questionId: string) => {
+    const question = assessmentConfig.questions.find((q) => q.id === questionId);
+    if (!question) return { answerId: "", answerText: "" };
+
+    const selectedOptionId = state.answers[questionId];
+    const selectedOption = question.options.find((opt) => opt.id === selectedOptionId);
+
+    return {
+      answerId: selectedOption?.answerId || "",
+      answerText: selectedOption?.label || "",
+    };
   };
 
   const handleSubmit = async () => {
@@ -234,6 +243,11 @@ export default function AssessmentPage() {
       (key) => state.otherText[key]?.trim()
     );
 
+    const leadVolume = getSingleAnswerMeta("q_lead_volume");
+    const dealValue = getSingleAnswerMeta("q_deal_value");
+    const grossRevenue = getSingleAnswerMeta("q_estimated_gross_revenue");
+    const grossMargin = getSingleAnswerMeta("q_estimated_gross_margin");
+
     const payload: Record<string, unknown> = {
       submission_id,
       assessment_version: "v2",
@@ -248,6 +262,16 @@ export default function AssessmentPage() {
       timestamp: new Date().toISOString(),
       rawAnswers,
       answers: formattedAnswers,
+      qualification: {
+        leadVolume: leadVolume.answerId,
+        leadVolumeLabel: leadVolume.answerText,
+        dealValue: dealValue.answerId,
+        dealValueLabel: dealValue.answerText,
+        estimatedGrossRevenue: grossRevenue.answerId,
+        estimatedGrossRevenueLabel: grossRevenue.answerText,
+        estimatedGrossMargin: grossMargin.answerId,
+        estimatedGrossMarginLabel: grossMargin.answerText,
+      },
       freeText: {
         "q16_additional_notes": state.notes || "",
       },
@@ -271,7 +295,13 @@ export default function AssessmentPage() {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      const data = await res.json() as { submission_id?: string };
+      let responseSubmissionId = "";
+      try {
+        const data = await res.json() as { submission_id?: string };
+        responseSubmissionId = data?.submission_id || "";
+      } catch (parseError) {
+        console.warn("Webhook response was not JSON; using client submission_id.", parseError);
+      }
 
       // Keep optional test webhook for mirror testing, but don't block redirect.
       if (webhookTestUrl) {
@@ -284,17 +314,15 @@ export default function AssessmentPage() {
         });
       }
 
-      if (!data.submission_id) {
-        throw new Error("Missing submission_id in webhook response");
-      }
-
+      const finalSubmissionId = responseSubmissionId || submission_id;
       const targetOrigin = "https://www.humtech.ai";
-      const targetUrl = `${targetOrigin}/results?submission=${encodeURIComponent(data.submission_id)}`;
+      const submittedAt = Date.now().toString();
+      const targetUrl = `${targetOrigin}/results?submission=${encodeURIComponent(finalSubmissionId)}&submitted_at=${encodeURIComponent(submittedAt)}`;
 
       // Let host pages redirect themselves when embedded in an iframe.
       if (window.parent && window.parent !== window) {
         window.parent.postMessage(
-          { type: "humtech-scorecard-complete", submission: data.submission_id },
+          { type: "humtech-scorecard-complete", submission: finalSubmissionId },
           targetOrigin
         );
       }
@@ -321,7 +349,7 @@ export default function AssessmentPage() {
   };
 
   const canProceed = isEmailStep
-    ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim() && state.revenueRange5to500m && state.mobile && state.mobile.trim()
+    ? state.email && state.email.includes("@") && state.name && state.name.trim() && state.company && state.company.trim() && state.mobile && state.mobile.trim()
     : isNotesStep
     ? true // Notes is optional
     : currentQuestion && (
@@ -659,42 +687,6 @@ export default function AssessmentPage() {
                   />
                 </div>
 
-                <div>
-                  <fieldset>
-                    <legend
-                      className="block text-sm font-medium mb-2"
-                      style={{ color: NAVY_LIGHT }}
-                    >
-                      Is your business revenue between £5m and £500m? <span style={{ color: '#D8B743' }}>*</span>
-                    </legend>
-                    <div className="flex flex-wrap gap-4">
-                      <label className="inline-flex items-center gap-2 text-sm cursor-pointer" style={{ color: NAVY_LIGHT }}>
-                        <input
-                          type="radio"
-                          name="revenueRange5to500m"
-                          value="yes"
-                          checked={state.revenueRange5to500m === "yes"}
-                          onChange={() => handleRevenueRangeChange("yes")}
-                          className="h-4 w-4"
-                          style={{ accentColor: GOLD }}
-                        />
-                        Yes
-                      </label>
-                      <label className="inline-flex items-center gap-2 text-sm cursor-pointer" style={{ color: NAVY_LIGHT }}>
-                        <input
-                          type="radio"
-                          name="revenueRange5to500m"
-                          value="no"
-                          checked={state.revenueRange5to500m === "no"}
-                          onChange={() => handleRevenueRangeChange("no")}
-                          className="h-4 w-4"
-                          style={{ accentColor: GOLD }}
-                        />
-                        No
-                      </label>
-                    </div>
-                  </fieldset>
-                </div>
               </div>
             </>
           )}
