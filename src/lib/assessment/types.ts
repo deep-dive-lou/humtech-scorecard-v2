@@ -3,7 +3,7 @@ export type Pillar = "lead_engagement_speed" | "appointment_reliability_conversi
 export interface QuestionOption {
   id: string;
   label: string;
-  answerId: "A" | "B" | "C" | "D" | "E" | "F";
+  answerId: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J";
   hasTextInput?: boolean; // For "Other, please specify" options
 }
 

@@ -435,8 +435,15 @@ export default function AssessmentPage() {
                   }
                 </span>
                 <h2 className="text-base sm:text-lg font-bold leading-snug" style={{ color: NAVY_LIGHT }}>
-                  {currentQuestion.text}
+                  {currentQuestion.text.includes('**')
+                    ? currentQuestion.text.split(/\*\*(.*?)\*\*/).map((part, i) =>
+                        i % 2 === 1 ? <strong key={i} style={{ fontWeight: 900 }}>{part}</strong> : part
+                      )
+                    : currentQuestion.text}
                 </h2>
+                {currentQuestion.isMultiSelect && (
+                  <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Select all that apply</p>
+                )}
               </div>
 
               <div className="space-y-2.5">

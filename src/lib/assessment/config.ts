@@ -10,7 +10,7 @@ export const assessmentConfig: AssessmentConfig = {
     { id: "informative", name: "Additional Information" },
   ],
   questions: [
-    // Q1-Q12: SCORED QUESTIONS
+    // SCORED QUESTIONS (Q1-Q8, Q11-Q12)
     {
       id: "q1_engagement_method",
       pillar: "lead_engagement_speed",
@@ -88,7 +88,7 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q7_metric_tracking",
       pillar: "operational_focus_time_efficiency",
-      text: "Do you follow \"If you can't measure it, you can't manage it\"\u2014tracking key metrics e.g. time to lead engagement, Conversion %, Staff Deflection Savings, pipeline coverage, and sales cycle length?",
+      text: "Do you track key revenue metrics in one place e.g. time to lead engagement, conversion %, staff deflection savings, pipeline coverage, and sales cycle length?",
       isScored: true,
       options: [
         { id: "100", label: "100% - there is not a metric with an impact on revenue or time that we don't measure.", answerId: "A" },
@@ -105,33 +105,9 @@ export const assessmentConfig: AssessmentConfig = {
       options: [
         { id: "none", label: "None", answerId: "A" },
         { id: "60m", label: "60 minutes or less per week", answerId: "B" },
-        { id: "1-4h", label: "1\u20134 hours per week", answerId: "C" },
-        { id: "4h-plus", label: "More than 4 hours per week", answerId: "D" },
-        { id: "unknown", label: "I don't know / we don't track this", answerId: "E" },
-      ],
-    },
-    {
-      id: "q9_repetitive_tasks_time",
-      pillar: "operational_focus_time_efficiency",
-      text: "How much time do you or your team spend performing standard repetitive tasks such as document requests, data entry and KPI/stats tracking?",
-      isScored: true,
-      options: [
-        { id: "none", label: "None", answerId: "A" },
-        { id: "60m", label: "60 minutes or less per week", answerId: "B" },
         { id: "1-5h", label: "1\u20135 hours per week", answerId: "C" },
         { id: "5h-plus", label: "More than 5 hours per week", answerId: "D" },
         { id: "unknown", label: "I don't know / we don't track this", answerId: "E" },
-      ],
-    },
-    {
-      id: "q10_kpi_tracking_quality",
-      pillar: "systems_automation_maturity",
-      text: "How would you rate your company KPI target tracking?",
-      isScored: true,
-      options: [
-        { id: "perfect", label: "Perfect - we have sight of all stats on one dashboard, and minimal manual input is required", answerId: "A" },
-        { id: "average", label: "Average - it could be displayed better and more of it is manual than we would like", answerId: "B" },
-        { id: "poor", label: "Poor - Either no automation or very poor to zero KPI/target tracking with no graphic visualisation", answerId: "C" },
       ],
     },
     {
@@ -148,13 +124,12 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q12_current_situation",
       pillar: "systems_automation_maturity",
-      text: "What best describes your current situation? (not all aspects may be relevant, just pick the best fit).",
+      text: "What best describes your **current** situation? (not all aspects may be relevant, just pick the best fit).",
       isScored: true,
       options: [
-        { id: "complete", label: "Complete automation: New clients experience an immediate 2 way triage appointment scheduling, over 80% of appointments are attended with pre-qualified leads and most clients transact. Our team don't perform repetitive admin tasks and we don't waste time or take risks requesting/receiving documents via email. Our sales and marketing including CRO are optimised and our KPI/target data is automated and visible in a simple dashboard", answerId: "A" },
-        { id: "partial", label: "Part automation: New clients receive some automated outreach (email/SMS/PDF), appointments are fairly well attended with good to reasonable sales outcomes. Our team perform some repetitive tasks and admin. Our sales and marketing including CRO are reasonable although could be better. KPI/target tracking works, but it takes more time than we would like", answerId: "B" },
-        { id: "none", label: "Zero automation: New clients wait for manual outreach or simple automated message. There is no instantaneous 2 way conversation to build trust and engage the client. Our team perform repetitive tasks and time is spent producing emails manually including document requests/receipt. Our sales, KPI tracking and/or marketing may need some work", answerId: "C" },
-        { id: "other", label: "Other, please specify", answerId: "D", hasTextInput: true },
+        { id: "advanced", label: "Advanced conversational AI. Over 80% new leads book and attend appointments. Industry leading sales conversion. Minimum or zero repetitive admin. Zero GDPR risk or time loss through email/doc requests. Lead gen & marketing optimal (ROAS/CRO/CAC/CPL/Copy & Creatives). KPI data is cutting edge and visible in one place.", answerId: "A" },
+        { id: "some", label: "Some AI/automation. 50% new leads book and attend appointments. Industry average sales conversion. Some repetitive admin. Some GDPR risk & time loss through email/doc requests. Lead gen and marketing average (ROAS/CRO/CAC/CPL/Copy & Creatives). KPI data partially automated but could be improved.", answerId: "B" },
+        { id: "none", label: "No AI/automation. <50% new leads book & attend appointments. Below desired sales conversion. High repetitive admin. Medium-high GDPR risk & time loss through email/doc requests. Lead gen & marketing unsatisfactory (ROAS/CRO/CAC/CPL/Copy & Creatives). KPI data has manual elements and metrics/display could be improved.", answerId: "C" },
       ],
     },
     // Qualification inputs for revenue/waterfall modeling (not scored)
@@ -212,44 +187,42 @@ export const assessmentConfig: AssessmentConfig = {
         { id: "unknown", label: "I don't know / rather not say", answerId: "F" },
       ],
     },
-    // Q13-Q15: INFORMATIVE QUESTIONS (not scored)
+    // Q13-Q14: INFORMATIVE QUESTIONS (not scored)
     {
       id: "q13_desired_outcome",
       pillar: "informative",
-      text: "What best describes the outcome you're looking for? (Select all that apply.)",
+      text: "What best describes the outcome you're looking for? (Select all that apply)",
       isScored: false,
       isMultiSelect: true,
       options: [
-        { id: "time-saving", label: "Time saving (Deflection ROI). Our team waste a lot of time performing repetitive tasks (e.g. data entry, client management, document requests, chasing).", answerId: "A" },
-        { id: "revenue", label: "Revenue increase. We'd like to increase revenue without additional marketing spend through targeted AI efficiency upgrades", answerId: "B" },
-        { id: "both", label: "A combination of time saving and revenue increase", answerId: "C" },
-        { id: "none", label: "None of the above, we're fine as we are.", answerId: "D" },
-        { id: "other", label: "Other, please specify", answerId: "E", hasTextInput: true },
+        { id: "time-saving", label: "Time saving deflection ROI - more output per unit of time, fewer manual processes", answerId: "A" },
+        { id: "ai-sales", label: "'Done For You' AI sales system with guaranteed attendance and conversion improvement", answerId: "B" },
+        { id: "ai-leadgen", label: "'Done For You' AI lead generation with guaranteed ROAS improvement (full ad account management)", answerId: "C" },
+        { id: "growth", label: "Growth without friction or linear headcount requirements", answerId: "D" },
+        { id: "staff-retention", label: "Reduced staff frustration and turnover from manual repetitive tasks", answerId: "E" },
+        { id: "revenue-growth", label: "Overall revenue growth without retainers or up-front payments (pay on results only)", answerId: "F" },
+        { id: "governance", label: "Enhance governance / reduce GDPR risk (e.g. ensure cloud data stored in UK data centres / cease sending and/or receiving sensitive data or documents via email)", answerId: "G" },
+        { id: "none", label: "None of the above, we're fine as we are.", answerId: "H" },
+        { id: "other", label: "Other, please specify:", answerId: "I", hasTextInput: true },
       ],
     },
     {
       id: "q14_ai_barriers",
       pillar: "informative",
-      text: "What has prevented you from implementing comprehensive AI strategy previously? (Select all that apply.)",
+      text: "What has prevented you from implementing comprehensive AI strategy previously? (Select all that apply)",
       isScored: false,
       isMultiSelect: true,
       options: [
-        { id: "tech-failed", label: "We've tried other platforms/apps and the technology did not meet our standards or solve a problem or evidence sufficient ROI/use case", answerId: "A" },
+        { id: "tech-failed", label: "We've tried other platforms/apps and the technology did not meet our standards, solve a problem, or evidence sufficient ROI/use case", answerId: "A" },
         { id: "expensive", label: "We've found options are too expensive", answerId: "B" },
         { id: "confusing", label: "We find AI technology confusing and lack any technical understanding", answerId: "C" },
         { id: "no-time", label: "We haven't had time to look into it in enough depth", answerId: "D" },
-      ],
-    },
-    {
-      id: "q15_solution_type",
-      pillar: "informative",
-      text: "15. Which type of solution would best suit your needs?",
-      isScored: false,
-      options: [
-        { id: "full-service", label: "I want to be at the cutting edge but don't want to pay big AI salaries. AI experts to handle everything including in-depth system/processes review, proposal/implementation with clear associated ROI and long-term commitment to ongoing improvements.", answerId: "A" },
-        { id: "directors-only", label: "I'm happy with our existing systems, but would like to learn more about your fractioned AI team", answerId: "B" },
-        { id: "not-concerned", label: "I'm not currently concerned about the opportunity loss in time, revenue and lost business", answerId: "C" },
-        { id: "other", label: "Other, please specify:", answerId: "D", hasTextInput: true },
+        { id: "no-upfront", label: "We don't want to commit to upfront payments, retainers or contracts without evidence that the system produces results for our business specifically", answerId: "E" },
+        { id: "no-comprehensive", label: "We have yet to find a comprehensive solution which can implement AI infrastructure across all departments - most services only solve one or two problems", answerId: "F" },
+        { id: "aftercare", label: "We don't want to use an 'out the box' service without specialised aftercare in case there are issues", answerId: "G" },
+        { id: "no-upheaval", label: "We don't want upheaval or new systems - AI has to integrate with the software and infrastructure already in place", answerId: "H" },
+        { id: "hands-off", label: "We don't have time to learn about AI systems. We need a 'hands off' system which doesn't incur additional time costs to our staff", answerId: "I" },
+        { id: "other", label: "Other, please specify:", answerId: "J", hasTextInput: true },
       ],
     },
   ],

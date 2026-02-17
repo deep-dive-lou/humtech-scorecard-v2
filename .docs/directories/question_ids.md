@@ -3,7 +3,7 @@
 This list must match what the form submits in `rawAnswers`.
 
 ## Scored qids (expected by scoring node)
-### Scored (Q1-Q12)
+### Scored (Q1-Q10)
 - q1_engagement_method
 - q2_response_time
 - q3_247_booking
@@ -12,16 +12,18 @@ This list must match what the form submits in `rawAnswers`.
 - q6_issue_detection
 - q7_metric_tracking
 - q8_non_revenue_time
-- q9_repetitive_tasks_time
-- q10_kpi_tracking_quality
 - q11_documents_and_signatures
 - q12_current_situation
 
-### Informational (Q13-Q16)
-- q13_desired_outcome (multi-select)
-- q14_ai_barriers (multi-select)
-- q15_solution_type
+### Informational (Q13-Q14 + notes)
+- q13_desired_outcome (multi-select, answer IDs A-I)
+- q14_ai_barriers (multi-select, answer IDs A-J)
 - q16_additional_notes (free text, sent in `freeText`)
+
+### Removed
+- ~~q9_repetitive_tasks_time~~ (merged into q8, deleted)
+- ~~q10_kpi_tracking_quality~~ (duplicated q7, deleted)
+- ~~q15_solution_type~~ (covered by q14_ai_barriers, deleted)
 
 ## Answer IDs
 Default: A, B, C, D, E (and sometimes F).
