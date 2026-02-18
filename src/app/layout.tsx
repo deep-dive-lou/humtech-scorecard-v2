@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://assessment.humtech.ai"),
   title: "HumTech AI Diagnostic",
   description: "Find out how much revenue you're leaving on the table if you're not embracing AI.",
+  icons: {
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    shortcut: [{ url: "/logo.png", type: "image/png" }],
+    apple: [{ url: "/logo.png", type: "image/png" }],
+  },
   openGraph: {
     type: "website",
     url: "https://assessment.humtech.ai",
