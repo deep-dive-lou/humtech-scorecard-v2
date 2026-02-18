@@ -166,6 +166,44 @@ export default function AssessmentPage() {
     };
   };
 
+  const renderQuestionText = (text: string) => {
+    const boldChunks = text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+
+    return boldChunks.map((chunk, chunkIndex) => {
+      const isBoldChunk = chunk.startsWith("**") && chunk.endsWith("**");
+      const plainChunk = isBoldChunk ? chunk.slice(2, -2) : chunk;
+      const parentheticalChunks = plainChunk.split(/(\([^)]*\))/g).filter(Boolean);
+
+      return (
+        <span
+          key={`chunk-${chunkIndex}`}
+          style={{ fontWeight: isBoldChunk ? 700 : undefined }}
+        >
+          {parentheticalChunks.map((part, partIndex) => {
+            const isParenthetical = part.startsWith("(") && part.endsWith(")");
+
+            if (!isParenthetical) {
+              return <span key={`part-${chunkIndex}-${partIndex}`}>{part}</span>;
+            }
+
+            return (
+              <span
+                key={`part-${chunkIndex}-${partIndex}`}
+                style={{
+                  fontStyle: "italic",
+                  fontSize: "0.9em",
+                  opacity: 0.86,
+                }}
+              >
+                {part}
+              </span>
+            );
+          })}
+        </span>
+      );
+    });
+  };
+
   const handleSubmit = async () => {
     const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "";
     const webhookTestUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_TEST_URL || "";
@@ -435,11 +473,7 @@ export default function AssessmentPage() {
                   }
                 </span>
                 <h2 className="text-base sm:text-lg font-bold leading-snug" style={{ color: NAVY_LIGHT }}>
-                  {currentQuestion.text.includes('**')
-                    ? currentQuestion.text.split(/\*\*(.*?)\*\*/).map((part, i) =>
-                        i % 2 === 1 ? <strong key={i} style={{ fontWeight: 900 }}>{part}</strong> : part
-                      )
-                    : currentQuestion.text}
+                  {renderQuestionText(currentQuestion.text)}
                 </h2>
                 {currentQuestion.isMultiSelect && (
                   <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Select all that apply</p>

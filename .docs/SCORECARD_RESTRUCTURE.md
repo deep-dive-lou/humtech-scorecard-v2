@@ -84,99 +84,89 @@ Product: Revenue dashboard / Growth Engine
 | 15 | Role in business | Owner / Director / Manager / Other — decision-maker check |
 | 16 | Email | Lead capture |
 
-## Revenue Loss Calculation
+## Revenue Waterfall Calculation (IMPLEMENTED)
 
-With Q1 (lead volume) and Q2 (deal value), n8n calculates estimated monthly pipeline and stage-by-stage losses using midpoint values:
+**Status:** Live in n8n as "Revenue Waterfall" code node.
 
-```
-Lead volume midpoints:  Under 50 → 30,  50-200 → 125,  200-500 → 350,  500+ → 600
-Deal value midpoints:   Under £500 → £300,  £500-2k → £1,250,  £2k-10k → £6,000,  £10k+ → £15,000
-
-Monthly pipeline = lead_volume × deal_value
-
-Loss at engagement   = pipeline × ghost_rate
-Loss at attendance   = (pipeline - engagement_loss) × (1 - show_rate)
-Loss at conversion   = (remaining) × (1 - conversion_rate)
-Actually closing     = pipeline - all_losses
-Capture rate         = actually_closing / pipeline × 100
-```
-
-### Example
-
-200 leads/month, £3k avg deal, 30% ghost, 70% show, 60% conversion:
+### Formula
 
 ```
-Pipeline:           200 × £3,000 = £600,000/month
-Lost at engagement: £600k × 0.30 = -£180,000
-Lost at attendance: £420k × 0.30 = -£126,000
-Lost at conversion: £294k × 0.40 = -£117,600
-Actually closing:   £176,400/month (29% capture rate)
+Pipeline = leads/month × avg deal value
+Captured = Pipeline × (1 − ghost%) × show% × conversion%
+Loss     = Pipeline − Captured
 ```
 
-### "Don't track" handling
+Losses are calculated sequentially at three funnel stages:
+1. **Engagement** — loss = pipeline × ghost_rate (from Q1)
+2. **Attendance** — loss = remaining × (1 − show_rate) (from Q4)
+3. **Conversion** — loss = remaining × (1 − conversion_rate) (from Q12)
 
-When a prospect answers "Don't track / Unsure" on a conversion metric, use industry average defaults:
+### Inputs
 
-- Ghost rate default: 35%
-- Show rate default: 70%
-- Conversion rate default: 55%
+**Qualification answers → midpoints:**
 
-Flag these in results: "We used industry averages where you don't currently track — which itself is a finding."
+| Lead volume answer | Midpoint | Deal value answer | Midpoint |
+|---|---|---|---|
+| Under 50 | 30 | Under £500 | £300 |
+| 50-200 | 125 | £500-2k | £1,250 |
+| 200-500 | 350 | £2k-10k | £6,000 |
+| 500+ | 600 | £10k+ | £15,000 |
+| Unknown | 125 | Unknown | £1,250 |
 
-## Results Output
+**Scored answers → stage rates:**
 
-### Pipeline Waterfall (replaces or supplements radar chart)
+| Stage | Question | Answer→Rate mapping | Default |
+|---|---|---|---|
+| Ghost rate | q1_engagement_method | A:10%, B:20%, C:35%, D:30%, E:35% | 35% |
+| Show rate | q4_show_rate | A:30%, B:50%, C:70%, D:85%, E:70% | 70% |
+| Conversion | q12_current_situation | A:80%, B:60%, C:35%, D:50% | 55% |
 
-Visual showing £ value flowing through stages with losses highlighted at each drop-off. Biggest loss is flagged as "We deploy here first."
+**Gross margin lens** (optional, from q_estimated_gross_margin):
 
-```
-ENQUIRY          ████████████████████ £600k
-                 ▼ 30% ghosted = -£180k        ← BIGGEST LEAK
-ENGAGED          ██████████████ £420k
-                 ▼ 30% no-show = -£126k
-ATTENDED         █████████ £294k
-                 ▼ 40% don't convert = -£118k
-CLOSED           █████ £176k
+When provided, the node also calculates `grossProfitPipeline` and `grossProfitAtRisk` by applying the margin % to pipeline and total loss.
 
-You're capturing 29% of your pipeline potential.
-Your biggest leak is at the ENQUIRY stage.
-```
-
-### Stage-to-Product Mapping in Results
-
-| Biggest leak at... | Results say... |
-|---|---|
-| Engagement (Q3-Q6) | "Speed-to-lead automation typically recovers 40-60% of ghosted leads" |
-| Attendance (Q7-Q8) | "Automated reminder sequences typically lift show rates by 20-30%" |
-| Conversion (Q9) | "Structured follow-up automation typically improves close rates by 15-25%" |
-| Operations (Q10-Q12) | "Process automation typically reclaims 5-15hrs/week per team member" |
-| Visibility (Q13) | "You can't improve what you don't measure — revenue visibility is step one" |
-
-## Sales Qualification Output
-
-For internal use (not shown to prospect), the scorecard submission should include:
+### Output
 
 ```json
 {
+  "revenueWaterfall": {
+    "leadVolume": 200,
+    "avgDealValue": 3000,
+    "pipeline": 600000,
+    "engagementLoss": 180000,
+    "attendanceLoss": 126000,
+    "conversionLoss": 117600,
+    "closedValue": 176400,
+    "totalLoss": 423600,
+    "captureRatePercent": 29.4,
+    "biggestLeakStage": "engagement",
+    "grossProfitPipeline": null,
+    "grossProfitAtRisk": null
+  },
   "qualification": {
     "estimated_monthly_pipeline": 600000,
     "estimated_monthly_loss": 423600,
     "capture_rate_percent": 29,
     "biggest_leak_stage": "engagement",
-    "recommended_lead_product": "booking_bot",
-    "deal_value_tier": "mid",
+    "recommended_lead_product": "speed_to_lead",
     "decision_maker": true
   }
 }
 ```
 
-This tells Chris S before the call: pipeline size, biggest problem, what to pitch, and whether the person can actually sign.
+### Biggest leak → product mapping
+
+| Biggest leak | recommended_lead_product |
+|---|---|
+| engagement | `speed_to_lead` |
+| attendance | `attendance_automation` |
+| conversion | `conversion_followup` |
 
 ## Implementation Notes
 
-- Questions 1-2 are qualification — they don't appear on the radar chart or score
-- Questions 3-13 are scored — these feed the radar chart (now with 5 axes instead of 4)
-- The revenue calculation runs server-side in n8n after submission
+- Q1–Q8 + Q11–Q12 are scored — these feed the radar chart (5 axes)
+- Q1, Q4, Q12 also feed the revenue waterfall stage rates
+- Qualification questions (lead volume, deal value, gross revenue, gross margin) feed the waterfall pipeline calculation
+- The revenue waterfall runs server-side in n8n after scoring
 - Results page shows both the pipeline waterfall AND the radar chart
 - Internal Slack/CRM notification includes the qualification JSON
-- Copy for questions needs writing by Chris S — structure and intent is defined here, final wording is his call
