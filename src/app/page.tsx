@@ -475,9 +475,6 @@ export default function AssessmentPage() {
                 <h2 className="text-base sm:text-lg font-bold leading-snug" style={{ color: NAVY_LIGHT }}>
                   {renderQuestionText(currentQuestion.text)}
                 </h2>
-                {currentQuestion.isMultiSelect && (
-                  <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Select all that apply</p>
-                )}
               </div>
 
               <div className="space-y-2.5">
