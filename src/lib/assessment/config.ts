@@ -202,7 +202,7 @@ export const assessmentConfig: AssessmentConfig = {
         { id: "100", label: "100% - there is not a metric with an impact on revenue or time that we don\u2019t measure.", answerId: "A" },
         { id: "70", label: "70% - mostly, although there may be a small number of key metrics that we don\u2019t have clear sight of.", answerId: "B" },
         { id: "50", label: "50% - we have sight of roughly half of what we should.", answerId: "C" },
-        { id: "sub-50", label: ">50% - we don\u2019t know what we don\u2019t know, and should be measuring more metrics which impact our service and revenue.", answerId: "D" },
+        { id: "sub-50", label: "<50% - we don\u2019t know what we don\u2019t know, and should be measuring more metrics which impact our service and revenue.", answerId: "D" },
       ],
     },
     // ── Q12: Non-revenue time (scored, radio) ──
