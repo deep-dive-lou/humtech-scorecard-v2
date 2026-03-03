@@ -43,7 +43,7 @@ export const assessmentConfig: AssessmentConfig = {
       isScored: true,
       options: [
         { id: "60s", label: "Less than 60 seconds", answerId: "A" },
-        { id: "10m", label: "Less than 10 minutes", answerId: "B" },
+        { id: "10m", label: "More than 10 minutes", answerId: "B" },
         { id: "1h", label: "Less than 1 hour", answerId: "C" },
         { id: "1h-plus", label: "More than 1 hour", answerId: "D" },
         { id: "unknown", label: "I don\u2019t know / we don\u2019t track this", answerId: "E" },
@@ -209,7 +209,7 @@ export const assessmentConfig: AssessmentConfig = {
     {
       id: "q8_non_revenue_time",
       pillar: "operational_focus_time_efficiency",
-      text: "On average how much time per week does each client facing team member spend performing non revenue generating tasks?",
+      text: "On average how much time per week does each team member spend performing non revenue generating tasks?",
       isScored: true,
       options: [
         { id: "none", label: "None", answerId: "A" },
@@ -339,20 +339,28 @@ export const assessmentConfig: AssessmentConfig = {
         { id: "unknown", label: "I don\u2019t know", answerId: "F" },
       ],
     },
-    // ── Q21: Gross margin (radio) ──
+    // ── Q21: Gross margin (NUMERIC %) ──
     {
       id: "q_estimated_gross_margin",
       pillar: "informative",
       text: "Estimated gross margin:",
       isScored: false,
-      options: [
-        { id: "90-plus", label: "90%+", answerId: "A" },
-        { id: "70-90", label: "70-90%", answerId: "B" },
-        { id: "50-70", label: "50-70%", answerId: "C" },
-        { id: "30-50", label: "30-50%", answerId: "D" },
-        { id: "under-30", label: "Under 30%", answerId: "E" },
-        { id: "unknown", label: "I don\u2019t know", answerId: "F" },
-      ],
+      inputType: "numeric",
+      numericConfig: {
+        min: 0,
+        max: 100,
+        step: 1,
+        unit: "percent",
+        placeholder: "e.g. 65",
+        hint: "Your estimated gross profit margin as a percentage",
+        fallbackOption: {
+          id: "unknown",
+          label: "I don\u2019t know",
+          answerId: "F",
+        },
+        fallbackDisclaimer: "We\u2019ll use a conservative industry estimate.",
+      },
+      options: [],
     },
   ],
 };

@@ -384,7 +384,6 @@ export default function AssessmentPage() {
     );
 
     const grossRevenue = getSingleAnswerMeta("q_estimated_gross_revenue");
-    const grossMargin = getSingleAnswerMeta("q_estimated_gross_margin");
 
     const payload: Record<string, unknown> = {
       submission_id,
@@ -414,8 +413,8 @@ export default function AssessmentPage() {
         transactionRateFallback: numericAnswers.q_transaction_rate?.isFallback || false,
         estimatedGrossRevenue: grossRevenue.answerId,
         estimatedGrossRevenueLabel: grossRevenue.answerText,
-        estimatedGrossMargin: grossMargin.answerId,
-        estimatedGrossMarginLabel: grossMargin.answerText,
+        estimatedGrossMargin: numericAnswers.q_estimated_gross_margin?.value,
+        estimatedGrossMarginFallback: numericAnswers.q_estimated_gross_margin?.isFallback || false,
       },
       freeText: {
         "q16_additional_notes": state.notes || "",
