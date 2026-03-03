@@ -23,6 +23,8 @@ export default function AssessmentPage() {
     answers: {},
     multiSelectAnswers: {},
     otherText: {},
+    numericValues: {},
+    numericFallbacks: {},
     currentStep: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -117,6 +119,56 @@ export default function AssessmentPage() {
     }));
   };
 
+  const handleNumericChange = (questionId: string, value: string) => {
+    if (value === "") {
+      setState((prev) => ({
+        ...prev,
+        numericValues: { ...prev.numericValues, [questionId]: null },
+        numericFallbacks: { ...prev.numericFallbacks, [questionId]: false },
+      }));
+      return;
+    }
+
+    const num = parseFloat(value);
+    if (isNaN(num)) return;
+
+    setState((prev) => ({
+      ...prev,
+      numericValues: { ...prev.numericValues, [questionId]: num },
+      numericFallbacks: { ...prev.numericFallbacks, [questionId]: false },
+    }));
+  };
+
+  const handleNumericBlur = (questionId: string) => {
+    const q = assessmentConfig.questions.find((q) => q.id === questionId);
+    if (!q?.numericConfig) return;
+
+    const value = state.numericValues[questionId];
+    if (value == null) return;
+
+    const clamped = Math.min(Math.max(value, q.numericConfig.min), q.numericConfig.max);
+    if (clamped !== value) {
+      setState((prev) => ({
+        ...prev,
+        numericValues: { ...prev.numericValues, [questionId]: clamped },
+      }));
+    }
+  };
+
+  const handleNumericFallback = (questionId: string) => {
+    setState((prev) => {
+      const isCurrentlyFallback = prev.numericFallbacks[questionId];
+      return {
+        ...prev,
+        numericValues: { ...prev.numericValues, [questionId]: null },
+        numericFallbacks: {
+          ...prev.numericFallbacks,
+          [questionId]: !isCurrentlyFallback,
+        },
+      };
+    });
+  };
+
   const handleNext = () => {
     if (state.currentStep < totalSteps - 1) {
       setState((prev) => ({ ...prev, currentStep: prev.currentStep + 1 }));
@@ -195,7 +247,7 @@ export default function AssessmentPage() {
                   opacity: 0.86,
                 }}
               >
-                {part}
+                {part.slice(1, -1)}
               </span>
             );
           })}
@@ -219,7 +271,38 @@ export default function AssessmentPage() {
 
     // Transform answers to include full question and answer text
     const formattedAnswers = assessmentConfig.questions.map((question) => {
-      if (question.isMultiSelect) {
+      if (question.inputType === "numeric") {
+        // Handle numeric questions
+        const isFallback = state.numericFallbacks[question.id];
+        const numericValue = state.numericValues[question.id];
+        const cfg = question.numericConfig!;
+
+        if (isFallback) {
+          return {
+            questionId: question.id,
+            questionText: question.text,
+            answerId: cfg.fallbackOption.answerId,
+            answerText: cfg.fallbackOption.label,
+            isScored: question.isScored,
+            numericValue: null,
+            isFallback: true,
+          };
+        }
+
+        const unit = cfg.unit === "percent" ? "%" : cfg.unit === "currency" ? (cfg.currencySymbol || "£") : "";
+        const prefix = cfg.unit === "currency" ? unit : "";
+        const suffix = cfg.unit === "percent" ? unit : "";
+
+        return {
+          questionId: question.id,
+          questionText: question.text,
+          answerId: "NUMERIC",
+          answerText: `${prefix}${numericValue}${suffix}`,
+          isScored: question.isScored,
+          numericValue,
+          isFallback: false,
+        };
+      } else if (question.isMultiSelect) {
         // Handle multi-select questions
         const selectedOptionIds = state.multiSelectAnswers[question.id] || [];
         const selectedOptions = selectedOptionIds
@@ -252,9 +335,17 @@ export default function AssessmentPage() {
 
     // Create raw answers mapping with answerId (A, B, C, D, E, F)
     // For multi-select questions, value is an array of answerIds
+    // For numeric questions, value is the fallback answerId OR "NUMERIC"
     const rawAnswers: Record<string, string | string[]> = {};
     assessmentConfig.questions.forEach((question) => {
-      if (question.isMultiSelect) {
+      if (question.inputType === "numeric") {
+        const isFallback = state.numericFallbacks[question.id];
+        if (isFallback) {
+          rawAnswers[question.id] = question.numericConfig!.fallbackOption.answerId;
+        } else if (state.numericValues[question.id] != null) {
+          rawAnswers[question.id] = "NUMERIC";
+        }
+      } else if (question.isMultiSelect) {
         // Handle multi-select questions
         const selectedOptionIds = state.multiSelectAnswers[question.id] || [];
         const selectedAnswerIds = selectedOptionIds
@@ -276,19 +367,28 @@ export default function AssessmentPage() {
       }
     });
 
+    // Collect exact numeric values for waterfall calculation
+    const numericAnswers: Record<string, { value: number | null; isFallback: boolean }> = {};
+    assessmentConfig.questions.forEach((question) => {
+      if (question.inputType === "numeric") {
+        numericAnswers[question.id] = {
+          value: state.numericValues[question.id] ?? null,
+          isFallback: state.numericFallbacks[question.id] || false,
+        };
+      }
+    });
+
     // Only include otherText if user selected "Other" options and provided text
     const hasOtherText = Object.keys(state.otherText).some(
       (key) => state.otherText[key]?.trim()
     );
 
-    const leadVolume = getSingleAnswerMeta("q_lead_volume");
-    const dealValue = getSingleAnswerMeta("q_deal_value");
     const grossRevenue = getSingleAnswerMeta("q_estimated_gross_revenue");
     const grossMargin = getSingleAnswerMeta("q_estimated_gross_margin");
 
     const payload: Record<string, unknown> = {
       submission_id,
-      assessment_version: "v2",
+      assessment_version: "v3",
       contact: {
         name: state.name,
         email: state.email,
@@ -299,12 +399,19 @@ export default function AssessmentPage() {
       },
       timestamp: new Date().toISOString(),
       rawAnswers,
+      numericAnswers,
       answers: formattedAnswers,
       qualification: {
-        leadVolume: leadVolume.answerId,
-        leadVolumeLabel: leadVolume.answerText,
-        dealValue: dealValue.answerId,
-        dealValueLabel: dealValue.answerText,
+        leadVolume: numericAnswers.q_lead_volume?.value,
+        leadVolumeFallback: numericAnswers.q_lead_volume?.isFallback || false,
+        dealValue: numericAnswers.q_deal_value?.value,
+        dealValueFallback: numericAnswers.q_deal_value?.isFallback || false,
+        bookingRate: numericAnswers.q4_show_rate?.value,
+        bookingRateFallback: numericAnswers.q4_show_rate?.isFallback || false,
+        attendanceRate: numericAnswers.q_attendance_rate?.value,
+        attendanceRateFallback: numericAnswers.q_attendance_rate?.isFallback || false,
+        transactionRate: numericAnswers.q_transaction_rate?.value,
+        transactionRateFallback: numericAnswers.q_transaction_rate?.isFallback || false,
         estimatedGrossRevenue: grossRevenue.answerId,
         estimatedGrossRevenueLabel: grossRevenue.answerText,
         estimatedGrossMargin: grossMargin.answerId,
@@ -391,9 +498,11 @@ export default function AssessmentPage() {
     : isNotesStep
     ? true // Notes is optional
     : currentQuestion && (
-        currentQuestion.isMultiSelect
-          ? (state.multiSelectAnswers[currentQuestion.id]?.length ?? 0) > 0
-          : state.answers[currentQuestion.id]
+        currentQuestion.inputType === "numeric"
+          ? (state.numericValues[currentQuestion.id] != null || state.numericFallbacks[currentQuestion.id])
+          : currentQuestion.isMultiSelect
+            ? (state.multiSelectAnswers[currentQuestion.id]?.length ?? 0) > 0
+            : state.answers[currentQuestion.id]
       );
 
   const progress = ((state.currentStep + 1) / totalSteps) * 100;
@@ -477,6 +586,131 @@ export default function AssessmentPage() {
                 </h2>
               </div>
 
+              {currentQuestion.inputType === "numeric" && currentQuestion.numericConfig ? (() => {
+                const cfg = currentQuestion.numericConfig;
+                const isFallback = state.numericFallbacks[currentQuestion.id] || false;
+                const numericValue = state.numericValues[currentQuestion.id];
+                const prefix = cfg.unit === "currency" ? (cfg.currencySymbol || "£") : "";
+                const suffix = cfg.unit === "percent" ? "%" : "";
+
+                return (
+                  <div className="space-y-3">
+                    {/* Hint text */}
+                    {cfg.hint && (
+                      <div
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+                        style={{ backgroundColor: "#F0F4F8", border: "1px solid #DFE3E9" }}
+                      >
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#6B7280" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span style={{ color: "#4B5563" }}>{cfg.hint}</span>
+                      </div>
+                    )}
+
+                    {/* Numeric input with unit indicator */}
+                    <div className="relative" style={{ maxWidth: "200px" }}>
+                      {prefix && (
+                        <span
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium pointer-events-none"
+                          style={{ color: isFallback ? "#9CA3AF" : NAVY_LIGHT }}
+                        >
+                          {prefix}
+                        </span>
+                      )}
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min={cfg.min}
+                        max={cfg.max}
+                        step={cfg.step || 1}
+                        value={numericValue != null && !isFallback ? numericValue : ""}
+                        onChange={(e) => handleNumericChange(currentQuestion.id, e.target.value)}
+                        placeholder={cfg.placeholder || ""}
+                        className="w-full py-2.5 rounded-lg outline-none border-2 text-sm"
+                        style={{
+                          paddingLeft: prefix ? "1.75rem" : "0.75rem",
+                          paddingRight: suffix ? "2rem" : "0.75rem",
+                          borderColor: isFallback ? FIELD_BORDER : (numericValue != null ? GOLD : FIELD_BORDER),
+                          backgroundColor: isFallback ? "#F3F4F6" : FIELD_BG,
+                          color: isFallback ? "#9CA3AF" : NAVY_LIGHT,
+                        }}
+                        onFocus={(e) => {
+                          if (isFallback) {
+                            setState((prev) => ({
+                              ...prev,
+                              numericFallbacks: { ...prev.numericFallbacks, [currentQuestion.id]: false },
+                            }));
+                          }
+                          e.target.style.borderColor = GOLD;
+                        }}
+                        onBlur={(e) => {
+                          handleNumericBlur(currentQuestion.id);
+                          if (numericValue == null) e.target.style.borderColor = FIELD_BORDER;
+                        }}
+                      />
+                      {suffix && (
+                        <span
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium pointer-events-none"
+                          style={{ color: isFallback ? "#9CA3AF" : NAVY_LIGHT }}
+                        >
+                          {suffix}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* "or" divider */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px" style={{ backgroundColor: FIELD_BORDER }} />
+                      <span className="text-xs" style={{ color: "#6B7280" }}>or</span>
+                      <div className="flex-1 h-px" style={{ backgroundColor: FIELD_BORDER }} />
+                    </div>
+
+                    {/* Fallback option — styled like a radio button */}
+                    <button
+                      onClick={() => handleNumericFallback(currentQuestion.id)}
+                      className="w-full text-left p-3 rounded-lg border-2 transition-all text-sm"
+                      style={{
+                        borderColor: isFallback ? GOLD : FIELD_BORDER,
+                        backgroundColor: isFallback ? '#FEF9EC' : FIELD_BG,
+                      }}
+                    >
+                      <div className="flex items-start">
+                        <div
+                          className="w-4 h-4 rounded-full border-2 mr-2.5 flex-shrink-0 flex items-center justify-center mt-0.5"
+                          style={{
+                            borderColor: isFallback ? GOLD : NAVY_LIGHT,
+                            backgroundColor: isFallback ? GOLD : 'transparent',
+                          }}
+                        >
+                          {isFallback && (
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: NAVY_LIGHT }} />
+                          )}
+                        </div>
+                        <span
+                          className={isFallback ? 'font-medium' : ''}
+                          style={{ color: NAVY_LIGHT }}
+                        >
+                          {cfg.fallbackOption.label}
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* Disclaimer when fallback is selected */}
+                    {isFallback && (
+                      <div
+                        className="flex items-start gap-2 px-3 py-2.5 rounded-lg text-xs"
+                        style={{ backgroundColor: "#FEF3CD", border: "1px solid #F0D76E" }}
+                      >
+                        <svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: "#92700C" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span style={{ color: "#6B5300", fontWeight: 500 }}>{cfg.fallbackDisclaimer}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })() : (
               <div className="space-y-2.5">
                 {currentQuestion.options.map((option) => {
                   const isSelected = currentQuestion.isMultiSelect
@@ -556,6 +790,7 @@ export default function AssessmentPage() {
                   );
                 })}
               </div>
+              )}
             </>
           ) : isNotesStep ? (
             <>
@@ -777,7 +1012,7 @@ export default function AssessmentPage() {
                 }
               }}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
+              {isSubmitting ? 'Loading...' : 'Show My Results'}
             </button>
           ) : (
             <button

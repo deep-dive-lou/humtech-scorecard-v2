@@ -1,5 +1,23 @@
 export type Pillar = "lead_engagement_speed" | "appointment_reliability_conversion" | "operational_focus_time_efficiency" | "systems_automation_maturity" | "revenue_protection_leakage" | "informative";
 
+export type InputType = "radio" | "numeric";
+
+export interface NumericConfig {
+  min: number;
+  max: number;
+  step?: number;
+  unit: "percent" | "currency" | "integer";
+  currencySymbol?: string;
+  placeholder?: string;
+  hint?: string;
+  fallbackOption: {
+    id: string;
+    label: string;
+    answerId: string;
+  };
+  fallbackDisclaimer: string;
+}
+
 export interface QuestionOption {
   id: string;
   label: string;
@@ -14,6 +32,8 @@ export interface Question {
   options: QuestionOption[];
   isScored?: boolean; // true for q1-q12, false for q13-q15
   isMultiSelect?: boolean; // true for questions allowing multiple selections
+  inputType?: InputType; // defaults to "radio" if absent
+  numericConfig?: NumericConfig; // config when inputType === "numeric"
 }
 
 export interface AssessmentConfig {
@@ -33,6 +53,8 @@ export interface AssessmentState {
   answers: Record<string, string>; // questionId -> optionId (single-select)
   multiSelectAnswers: Record<string, string[]>; // questionId -> optionId[] (multi-select)
   otherText: Record<string, string>; // questionId -> text for "Other" options
+  numericValues: Record<string, number | null>; // questionId -> numeric value
+  numericFallbacks: Record<string, boolean>; // questionId -> true if fallback selected
   currentStep: number;
   email?: string;
   name?: string;
